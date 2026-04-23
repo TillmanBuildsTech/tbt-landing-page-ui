@@ -35,108 +35,145 @@ function relayout() {
 new ResizeObserver(() => relayout()).observe(document.body);
 initPretext();
 
-// ── 2. GLYPH LATTICE ────────────────────────────────────────────
-const lattice    = document.getElementById('glyph-lattice');
-const glyphChars = '░░░▒▒▓·∘○◦';
-const CHAR_W     = 14;
-const CHAR_H     = CHAR_W * 1.6;
-let glyphSpans   = [];
-let mouseX       = -9999;
-let mouseY       = -9999;
-let rafScheduled = false;
+// ── 2. GLYPH LATTICE (canvas) ────────────────────────────────────
+// Rendered on a single <canvas> instead of hundreds of DOM spans so that
+// mouse-move updates and window-resize redraws are pure pixel operations
+// with no layout/paint cost.
+const latticeEl = document.getElementById('glyph-lattice');
 
-function buildLattice() {
-  lattice.innerHTML = '';
-  glyphSpans = [];
-  // Use the element's own clientWidth/clientHeight — the actual pixel size of the
-  // container — so the JS coordinate grid exactly matches the DOM layout.
-  const w    = lattice.clientWidth  || window.innerWidth;
-  const h    = lattice.clientHeight || window.innerHeight;
-  const cols = Math.ceil(w / CHAR_W) + 1;
-  const rows = Math.ceil(h / CHAR_H) + 1;
-  const frag = document.createDocumentFragment();
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const span = document.createElement('span');
-      span.textContent = glyphChars[Math.floor(Math.random() * glyphChars.length)];
-      // Position each glyph exactly — no flex, no sub-pixel drift
-      span.style.left = (c * CHAR_W) + 'px';
-      span.style.top  = (r * CHAR_H) + 'px';
-      span.dataset.c  = c;
-      span.dataset.r  = r;
-      frag.appendChild(span);
-      glyphSpans.push(span);
-    }
-  }
-  lattice.appendChild(frag);
-}
-
-function updateLattice() {
-  rafScheduled = false;
-  const rect  = lattice.getBoundingClientRect();
-  const relX  = mouseX - rect.left;
-  const relY  = mouseY - rect.top;
-  const radius = 160;
-  const tealR  = 60;
-  for (const span of glyphSpans) {
-    const cx   = +span.dataset.c * CHAR_W + CHAR_W / 2;
-    const cy   = +span.dataset.r * CHAR_H + CHAR_H / 2;
-    const dx   = cx - relX;
-    const dy   = cy - relY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < radius) {
-      const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-      const str   = 1 - dist / radius;
-      span.style.transform = `rotate(${angle}deg) scale(${1 + str * 0.15})`;
-      if (dist < tealR) {
-        const t = 1 - dist / tealR;
-        span.style.color   = `rgba(46, 203, 168, ${t * 0.8 + 0.2})`;
-        span.style.opacity = '1';
-      } else {
-        span.style.color   = '';
-        span.style.opacity = '';
-      }
-    } else {
-      span.style.transform = '';
-      span.style.color     = '';
-      span.style.opacity   = '';
-    }
-  }
-}
-
-document.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-  if (!rafScheduled) {
-    rafScheduled = true;
-    requestAnimationFrame(updateLattice);
-  }
-});
-
-// Reset glyphs when mouse leaves the hero so they don't freeze mid-transform
-const heroEl = document.querySelector('.hero');
-if (heroEl) {
-  heroEl.addEventListener('mouseleave', () => {
-    mouseX = -9999;
-    mouseY = -9999;
-    for (const span of glyphSpans) {
-      span.style.transform = '';
-      span.style.color     = '';
-      span.style.opacity   = '';
-    }
-  });
-}
-
-let resizeDebounce;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeDebounce);
-  resizeDebounce = setTimeout(buildLattice, 120);
-});
-
-// Don't build lattice on mobile (saves battery, invisible anyway)
-if (window.matchMedia('(min-width: 768px)').matches &&
+if (latticeEl &&
+    window.matchMedia('(min-width: 768px)').matches &&
     !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  buildLattice();
+
+  const canvas  = document.createElement('canvas');
+  canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%';
+  canvas.setAttribute('aria-hidden', 'true');
+  latticeEl.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+
+  const GLYPH_CHARS = ['░','░','░','▒','▒','▓','·','∘','○','◦'];
+  const CHAR_W  = 14;
+  const CHAR_H  = CHAR_W * 1.6;   // ~22.4 px
+  const RADIUS  = 160;
+  const TEAL_R  = 60;
+  // Base glyph colour — matches CSS var(--muted); globalAlpha 0.18 is applied
+  // at draw time so the teal highlight's own alpha is also damped to match the
+  // original container opacity: 0.18 behaviour exactly.
+  const BASE_COLOR = '#7A6F67';
+
+  let glyphs = [];
+  let mouseX = -9999, mouseY = -9999;
+  let rafId  = null;
+
+  function buildGlyphs() {
+    glyphs = [];
+    const cols = Math.ceil(canvas.width  / CHAR_W) + 1;
+    const rows = Math.ceil(canvas.height / CHAR_H) + 1;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        glyphs.push({
+          char: GLYPH_CHARS[Math.floor(Math.random() * GLYPH_CHARS.length)],
+          x: c * CHAR_W + CHAR_W / 2,
+          y: r * CHAR_H + CHAR_H / 2,
+        });
+      }
+    }
+  }
+
+  function setSize() {
+    // Use device pixel ratio for crisp text on HiDPI screens
+    const dpr  = window.devicePixelRatio || 1;
+    const rect = latticeEl.getBoundingClientRect();
+    canvas.width  = rect.width  * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    buildGlyphs();
+  }
+
+  function draw() {
+    rafId = null;
+    const W = canvas.width  / (window.devicePixelRatio || 1);
+    const H = canvas.height / (window.devicePixelRatio || 1);
+    ctx.clearRect(0, 0, W, H);
+    ctx.font = `${CHAR_W}px var(--font-mono, monospace)`;
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    // Mirror the original CSS `opacity: 0.18` on the container — this multiplies
+    // with each glyph's own fillStyle alpha, so the teal highlight is properly
+    // dampened to match how it looked before.
+    ctx.globalAlpha = 0.18;
+
+    const rect = latticeEl.getBoundingClientRect();
+    const relX = mouseX - rect.left;
+    const relY = mouseY - rect.top;
+
+    for (const g of glyphs) {
+      const dx   = g.x - relX;
+      const dy   = g.y - relY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      ctx.save();
+      ctx.translate(g.x, g.y);
+
+      if (dist < RADIUS) {
+        const str   = 1 - dist / RADIUS;
+        const sc    = 1 + str * 0.15;
+        const angle = Math.atan2(dy, dx);
+        // Rotate FIRST so the coordinate frame is already tilted, then stretch
+        // tall in that local space — this rotates a rigid tall rectangle without
+        // any skew. Reversing the order (scale then rotate) shears the axes and
+        // turns glyphs into parallelograms / triangles.
+        ctx.rotate(angle);
+        ctx.scale(sc, sc * CHAR_H / CHAR_W);
+
+        if (dist < TEAL_R) {
+          const t = 1 - dist / TEAL_R;
+          ctx.fillStyle = `rgba(46,203,168,${(t * 0.8 + 0.2)})`;
+        } else {
+          ctx.fillStyle = BASE_COLOR;
+        }
+      } else {
+        // Resting glyphs: just stretch tall in screen space
+        ctx.scale(1, CHAR_H / CHAR_W);
+        ctx.fillStyle = BASE_COLOR;
+      }
+
+      ctx.fillText(g.char, 0, 0);
+      ctx.restore();
+    }
+  }
+
+  function scheduleRedraw() {
+    if (!rafId) rafId = requestAnimationFrame(draw);
+  }
+
+  // Mouse tracking
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    scheduleRedraw();
+  });
+
+  // Reset when mouse leaves the hero
+  const heroEl = document.querySelector('.hero');
+  if (heroEl) {
+    heroEl.addEventListener('mouseleave', () => {
+      mouseX = -9999;
+      mouseY = -9999;
+      scheduleRedraw();
+    });
+  }
+
+  // Resize — cancel any in-flight RAF first so it can't race with setSize()
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    resizeTimer = setTimeout(() => { setSize(); scheduleRedraw(); }, 150);
+  });
+
+  setSize();
+  scheduleRedraw();
 }
 
 // ── 3. TERMINAL TYPEWRITER ───────────────────────────────────────
