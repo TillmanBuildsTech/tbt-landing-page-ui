@@ -1,0 +1,7 @@
+.astro/
+.docs/
+.gstack/
+
+node_modules/
+
+dist/
