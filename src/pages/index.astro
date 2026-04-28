@@ -1,26 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import FooterBar from '../components/FooterBar.astro';
 ---
 
 <BaseLayout>
-  <!-- ──────────────────────────────────────────────────────────────
-       NAVIGATION
-  ────────────────────────────────────────────────────────────────── -->
-  <nav class="nav" role="navigation" aria-label="Main navigation">
-    <div class="nav__inner">
-      <a href="/" class="nav__logo" aria-label="TillmanBuildsTech home"><em>~/</em>TillmanBuildsTech</a>
-      <ul class="nav__links" role="list">
-        <li><a href="#services">Services</a></li>
-        <li><a href="#work">Work</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#">Writing</a></li>
-      </ul>
-      <a href="#contact" class="nav__cta" aria-label="Contact Brandon">$ contact</a>
-      <button class="nav__burger" aria-label="Toggle navigation" aria-expanded="false" id="nav-burger">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </nav>
+  <Nav />
 
   <!-- ──────────────────────────────────────────────────────────────
        HERO
@@ -38,7 +23,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <p class="hero__desc">AI · Automation · Web · DevOps</p>
         <div class="hero__ctas">
           <a href="#contact" class="btn-primary">$ start_a_project</a>
-          <a href="#work" class="btn-ghost">See recent work →</a>
+          <a href="/work" class="btn-ghost">See recent work →</a>
         </div>
       </div>
 
@@ -122,16 +107,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <h2 class="bio__name" id="bio-heading">Brandon Tillman</h2>
             <p class="bio__role">Independent Consultant</p>
             <p class="bio__text" data-pretext>
-              I've spent the last several years at the intersection of AI, automation, and software engineering. I work with startups and small teams to build reliable systems — no bloat, no hand-waving, just things that work in production.
+              I've spent the last several years at the intersection of AI, automation, and software engineering. I work with startups and small businesses to build practical systems that scale. 
+			        With a lifelong love for coding and problem-solving, I thrive on turning complex challenges into elegant, maintainable solutions that drive real results.
             </p>
             <div class="bio__links">
+              <a href="https://brandontillman.com" class="bio__link" target="_blank" rel="noopener noreferrer" aria-label="Personal blog">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-.003 22C6.477 22 .997 16.523.997 11.997S6.477 2 .997 2s10.998-.001 10.998-.001c5.525 0 10.002 4.477 10.002 9.999s-4.477 10.001-10.002 10.001z"/></svg>
+                Tech Blog
+              </a>
               <a href="https://github.com/Tillman32" class="bio__link" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
                 <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-                github.com/Tillman32
+                GitHub
               </a>
-              <a href="#" class="bio__link" aria-label="Discord community">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-                discord
+			        <a href="https://www.linkedin.com/in/brandon-tillman/" class="bio__link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 11.268h-3v-5.604c0-1.337-.026-3.062-1.867-3.062s-2.154 1.459-2.154 2.965v5.701h-3v-10h2.881v1.367h.041c.401-.761 1.381-1.562 2.846-1.562 3.042 0 3.603 2.001 3.603 4.599v5.596z"/></svg>
+                LinkedIn
               </a>
             </div>
           </div>
@@ -139,16 +129,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
         <div class="bio__stats" aria-label="Key stats">
           <div>
-            <div class="bio__stat-num">50+</div>
-            <div class="bio__stat-label">Projects shipped</div>
+            <div class="bio__stat-num">48 hr</div>
+            <div class="bio__stat-label">Response guaranteed</div>
           </div>
           <div>
             <div class="bio__stat-num">15 yr</div>
             <div class="bio__stat-label">Engineering experience</div>
           </div>
           <div>
-            <div class="bio__stat-num">2 wk</div>
-            <div class="bio__stat-label">Typical project start</div>
+            <div class="bio__stat-num">&lt; 1 wk</div>
+            <div class="bio__stat-label">Typical kickoff</div>
           </div>
         </div>
 
@@ -164,9 +154,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <div class="contact__grid">
 
         <div>
-          <h2 class="contact__headline" id="contact-heading">Let's build something.</h2>
-          <p class="contact__sub">Tell me about your project and I'll get back to you within 24 hours.</p>
-          <form method="POST" action="/api/contact" novalidate aria-label="Contact form">
+          <h2 class="contact__headline" id="contact-heading">Let's build something awesome together!</h2>
+          <p class="contact__sub">Tell me about your project and I'll get back to you within 48 hours.</p>
+          <form id="contact-form" method="POST" action="/api/contact" novalidate aria-label="Contact form">
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label" for="name">Name</label>
@@ -193,22 +183,24 @@ import BaseLayout from '../layouts/BaseLayout.astro';
               <textarea class="form-textarea" id="message" name="message" placeholder="Describe what you're trying to build..." rows="4" required></textarea>
             </div>
             <button type="submit" class="btn-submit">$ send_message</button>
+            <div id="form-status" role="alert" aria-live="polite" style="margin-top: 12px; font-family: var(--font-mono); font-size: 13px;"></div>
           </form>
         </div>
 
         <div>
           <h3 class="newsletter__headline">Stay in the loop.</h3>
           <p class="newsletter__sub">Occasional notes on AI, automation, and building — no noise, no sales.</p>
-          <form class="newsletter__form" method="POST" action="/api/subscribe" aria-label="Newsletter subscribe">
+          <form id="newsletter-form" class="newsletter__form" method="POST" action="/api/subscribe" aria-label="Newsletter subscribe">
             <input class="newsletter__input" type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
             <button type="submit" class="btn-subscribe">subscribe →</button>
           </form>
+          <div id="newsletter-status" role="alert" aria-live="polite" style="margin-top: 8px; font-family: var(--font-mono); font-size: 12px;"></div>
 
           <p class="quick-links__label">// Quick Links</p>
           <ul class="quick-links__list" role="list">
             <li><a href="#services">Services</a></li>
-            <li><a href="#work">Case Studies</a></li>
-            <li><a href="#">Writing</a></li>
+            <li><a href="/work">Case Studies</a></li>
+            <li><a href="https://brandontillman.com" target="_blank" rel="noopener noreferrer">Writing</a></li>
             <li><a href="https://github.com/Tillman32" target="_blank" rel="noopener noreferrer">GitHub</a></li>
           </ul>
         </div>
@@ -217,21 +209,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </div>
   </section>
 
-  <!-- ──────────────────────────────────────────────────────────────
-       FOOTER BAR
-  ────────────────────────────────────────────────────────────────── -->
-  <footer class="footer-bar" role="contentinfo">
-    <div class="container">
-      <div class="footer-bar__inner">
-        <p class="footer-bar__copy">© 2026 Brandon Tillman — TillmanBuildsTech.com</p>
-        <nav class="footer-bar__links" aria-label="Footer links">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Colophon</a>
-        </nav>
-      </div>
-    </div>
-  </footer>
+  <FooterBar />
 
   <script>
     import '../scripts/main.js';

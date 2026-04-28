@@ -1,0 +1,67 @@
+---
+import ServiceLayout from '../../layouts/ServiceLayout.astro';
+---
+
+<ServiceLayout
+  number="01"
+  tag="ai_agents/"
+  title="AI & Agents"
+  headline="I build AI systems that actually do things."
+  description="From single-prompt integrations to multi-step autonomous agents — built for production, not demos."
+>
+
+  <section class="service-section" aria-labelledby="includes-heading">
+    <p class="section-label" id="includes-heading">// What's included</p>
+    <ul class="service-deliverables">
+      <li>Custom LLM API integration (OpenAI / Anthropic / Ollama)</li>
+      <li>RAG pipeline design and implementation</li>
+      <li>Multi-agent orchestration</li>
+      <li>Prompt engineering and eval framework</li>
+      <li>Streaming UI integration</li>
+      <li>Production deployment + monitoring</li>
+      <li>Handoff documentation</li>
+    </ul>
+  </section>
+
+  <section class="service-section" aria-labelledby="engagement-heading">
+    <p class="section-label" id="engagement-heading">// Typical engagement</p>
+    <p class="service-engagement">
+      Most projects run 2–6 weeks depending on complexity. Fixed-price proposals after a 30-min discovery call.
+      I work async-first but am available for syncs as needed.
+    </p>
+  </section>
+
+  <section class="service-section" aria-labelledby="tech-heading">
+    <p class="section-label" id="tech-heading">// Technologies</p>
+    <div class="service-chips">
+      <span class="tech-chip">OpenAI</span>
+      <span class="tech-chip">Anthropic</span>
+      <span class="tech-chip">LangChain</span>
+      <span class="tech-chip">LlamaIndex</span>
+      <span class="tech-chip">Python</span>
+      <span class="tech-chip">FastAPI</span>
+      <span class="tech-chip">Vercel AI SDK</span>
+      <span class="tech-chip">PostgreSQL/pgvector</span>
+      <span class="tech-chip">Pinecone</span>
+    </div>
+  </section>
+
+  <section class="service-section" aria-labelledby="usecases-heading">
+    <p class="section-label" id="usecases-heading">// Common use cases</p>
+    <div class="use-cases-grid">
+      <div class="use-case-card">
+        <p class="use-case-card__title">Automated customer support triage</p>
+        <p>Route and respond to inbound tickets using an LLM agent trained on your product.</p>
+      </div>
+      <div class="use-case-card">
+        <p class="use-case-card__title">Internal knowledge base Q&amp;A</p>
+        <p>Give your team instant answers from docs, runbooks, and internal wikis via RAG.</p>
+      </div>
+      <div class="use-case-card">
+        <p class="use-case-card__title">Lead qualification + outreach agent</p>
+        <p>Score inbound leads and draft personalized follow-up emails automatically.</p>
+      </div>
+    </div>
+  </section>
+
+</ServiceLayout>

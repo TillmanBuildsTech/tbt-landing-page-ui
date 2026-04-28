@@ -1,0 +1,45 @@
+---
+import Nav from '../components/Nav.astro';
+import FooterBar from '../components/FooterBar.astro';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  number: string;
+  tag: string;
+  title: string;
+  headline: string;
+  description: string;
+}
+
+const { number, tag, title, headline, description } = Astro.props;
+---
+
+<BaseLayout title={`${title} — TillmanBuildsTech`} description={description}>
+  <Nav />
+
+  <main class="page-content">
+    <div class="container">
+
+      <header class="service-page-header">
+        <p class="service-page-header__number">{number} / {tag}</p>
+        <h1 class="service-page-header__headline">{headline}</h1>
+        <p class="service-page-header__desc">{description}</p>
+      </header>
+
+      <slot />
+
+      <div class="page-cta">
+        <h2 class="page-cta__headline">Ready to start?</h2>
+        <p class="page-cta__sub">Tell me about your project and I'll get back to you within 48 hours.</p>
+        <a href="/#contact" class="btn-primary">$ start_a_project</a>
+      </div>
+
+    </div>
+  </main>
+
+  <FooterBar />
+
+  <script>
+    import '../scripts/main.js';
+  </script>
+</BaseLayout>

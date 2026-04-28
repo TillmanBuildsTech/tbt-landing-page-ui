@@ -1,0 +1,98 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import FooterBar from '../components/FooterBar.astro';
+---
+
+<BaseLayout
+  title="Work — TillmanBuildsTech"
+  description="Selected projects and case studies from Brandon Tillman — AI agents, automation, web apps, and DevOps."
+>
+  <Nav />
+
+  <main class="page-content">
+    <div class="container">
+
+      <header class="page-header" id="work">
+        <p class="section-label">// Work</p>
+        <h1 class="page-header__headline">What I've Built</h1>
+        <p class="page-header__sub">Selected projects and case studies.</p>
+      </header>
+
+      <div class="work-grid">
+
+        <article class="work-card">
+          <span class="work-card__tag">ai_agents/</span>
+          <h2 class="work-card__title">AI Lead Qualification Agent</h2>
+          <p class="work-card__desc">
+            Built a multi-step LLM agent that qualifies inbound sales leads, routes them by priority,
+            and drafts personalized follow-up emails — reducing manual triage time by 80%.
+          </p>
+          <div class="work-card__chips">
+            <span class="tech-chip">OpenAI</span>
+            <span class="tech-chip">Python</span>
+            <span class="tech-chip">n8n</span>
+            <span class="tech-chip">PostgreSQL</span>
+          </div>
+          <div class="work-card__meta">
+            <span class="work-card__client">client: Confidential</span>
+            <a href="#" class="work-card__cta">View case study →</a>
+          </div>
+        </article>
+
+        <article class="work-card">
+          <span class="work-card__tag">automation/</span>
+          <h2 class="work-card__title">E-Commerce Automation Pipeline</h2>
+          <p class="work-card__desc">
+            End-to-end order processing automation connecting Shopify, NetSuite, and a 3PL warehouse API.
+            Eliminated 40 hours/week of manual data entry.
+          </p>
+          <div class="work-card__chips">
+            <span class="tech-chip">Python</span>
+            <span class="tech-chip">Make</span>
+            <span class="tech-chip">REST APIs</span>
+            <span class="tech-chip">Vercel</span>
+          </div>
+          <div class="work-card__meta">
+            <span class="work-card__client">client: Confidential</span>
+            <a href="#" class="work-card__cta">View case study →</a>
+          </div>
+        </article>
+
+        <article class="work-card">
+          <span class="work-card__tag">devops/</span>
+          <h2 class="work-card__title">Internal DevOps Dashboard</h2>
+          <p class="work-card__desc">
+            Built a real-time infrastructure monitoring dashboard with deployment controls, log tailing,
+            and incident alerting for a 12-person engineering team.
+          </p>
+          <div class="work-card__chips">
+            <span class="tech-chip">Next.js</span>
+            <span class="tech-chip">Node</span>
+            <span class="tech-chip">Docker</span>
+            <span class="tech-chip">Fly.io</span>
+            <span class="tech-chip">Prometheus</span>
+          </div>
+          <div class="work-card__meta">
+            <span class="work-card__client">client: Internal project</span>
+            <a href="#" class="work-card__cta">View case study →</a>
+          </div>
+        </article>
+
+      </div>
+
+      <div class="page-cta">
+        <h2 class="page-cta__headline">Have a project in mind?</h2>
+        <p class="page-cta__sub">Tell me what you're trying to build.</p>
+        <a href="/#contact" class="btn-primary">Start a Project →</a>
+      </div>
+
+    </div>
+  </main>
+
+  <FooterBar />
+
+  <script>
+    import '../scripts/main.js';
+  </script>
+</BaseLayout>

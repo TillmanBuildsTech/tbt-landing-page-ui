@@ -296,3 +296,75 @@ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   `;
   document.head.appendChild(style);
 }
+
+// ── 6. CONTACT FORM ─────────────────────────────────────────────
+const contactForm = document.getElementById('contact-form');
+const formStatus  = document.getElementById('form-status');
+if (contactForm && formStatus) {
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = contactForm.querySelector('[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = '$ sending...';
+    formStatus.textContent = '';
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        body: new FormData(contactForm),
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        formStatus.style.color = 'var(--accent)';
+        formStatus.textContent = '$ message_sent ✓';
+        contactForm.reset();
+      } else {
+        formStatus.style.color = '#FF6B6B';
+        formStatus.textContent = `$ error — ${json.error ?? 'please try again'}`;
+      }
+    } catch {
+      formStatus.style.color = '#FF6B6B';
+      formStatus.textContent = '$ error — please try again';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+}
+
+// ── 7. NEWSLETTER FORM ───────────────────────────────────────────
+const newsletterForm   = document.getElementById('newsletter-form');
+const newsletterStatus = document.getElementById('newsletter-status');
+if (newsletterForm && newsletterStatus) {
+  newsletterForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = newsletterForm.querySelector('[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'subscribing...';
+    newsletterStatus.textContent = '';
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        body: new FormData(newsletterForm),
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        newsletterStatus.style.color = 'var(--accent)';
+        newsletterStatus.textContent = '$ subscribed ✓';
+        newsletterForm.reset();
+      } else {
+        newsletterStatus.style.color = '#FF6B6B';
+        newsletterStatus.textContent = `$ error — ${json.error ?? 'please try again'}`;
+      }
+    } catch {
+      newsletterStatus.style.color = '#FF6B6B';
+      newsletterStatus.textContent = '$ error — please try again';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+}

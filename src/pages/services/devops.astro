@@ -1,0 +1,68 @@
+---
+import ServiceLayout from '../../layouts/ServiceLayout.astro';
+---
+
+<ServiceLayout
+  number="04"
+  tag="devops/"
+  title="DevOps & Infrastructure"
+  headline="From zero to production-ready — with monitoring."
+  description="Infrastructure setup, containerization, CI/CD pipelines, and cloud deployment. No black boxes."
+>
+
+  <section class="service-section" aria-labelledby="includes-heading">
+    <p class="section-label" id="includes-heading">// What's included</p>
+    <ul class="service-deliverables">
+      <li>Cloud infrastructure setup (Fly.io, AWS, GCP, Vercel)</li>
+      <li>Docker containerization</li>
+      <li>CI/CD pipeline setup (GitHub Actions)</li>
+      <li>Monitoring + alerting setup (Prometheus, Grafana, Sentry)</li>
+      <li>Cloudflare DNS + security config</li>
+      <li>Infrastructure-as-code (Terraform)</li>
+      <li>Runbook and incident playbook</li>
+    </ul>
+  </section>
+
+  <section class="service-section" aria-labelledby="engagement-heading">
+    <p class="section-label" id="engagement-heading">// Typical engagement</p>
+    <p class="service-engagement">
+      DevOps engagements are typically 1–3 weeks for initial setup, with optional ongoing retainer
+      for monitoring and maintenance.
+    </p>
+  </section>
+
+  <section class="service-section" aria-labelledby="tech-heading">
+    <p class="section-label" id="tech-heading">// Technologies</p>
+    <div class="service-chips">
+      <span class="tech-chip">Docker</span>
+      <span class="tech-chip">GitHub Actions</span>
+      <span class="tech-chip">Fly.io</span>
+      <span class="tech-chip">AWS</span>
+      <span class="tech-chip">Cloudflare</span>
+      <span class="tech-chip">Terraform</span>
+      <span class="tech-chip">Prometheus</span>
+      <span class="tech-chip">Grafana</span>
+      <span class="tech-chip">Sentry</span>
+      <span class="tech-chip">Linux</span>
+    </div>
+  </section>
+
+  <section class="service-section" aria-labelledby="usecases-heading">
+    <p class="section-label" id="usecases-heading">// Common use cases</p>
+    <div class="use-cases-grid">
+      <div class="use-case-card">
+        <p class="use-case-card__title">Startup production launch readiness</p>
+        <p>Get from "it works on my machine" to a hardened, monitored production environment.</p>
+      </div>
+      <div class="use-case-card">
+        <p class="use-case-card__title">CI/CD for a growing engineering team</p>
+        <p>Automated test, build, and deploy pipelines so your team ships with confidence.</p>
+      </div>
+      <div class="use-case-card">
+        <p class="use-case-card__title">Migration from Heroku to modern cloud</p>
+        <p>Move off Heroku to Fly.io, AWS, or GCP — zero-downtime, with full IaC.</p>
+      </div>
+    </div>
+  </section>
+
+</ServiceLayout>
