@@ -2,14 +2,14 @@ name: TillmanBuildsTech.com
 version: 0.0.1
 description: APM project for TillmanBuildsTech.com
 author: Brandon Tillman
-# Which agent platforms to deploy to.
-# Resolution order: --target flag > this field > auto-detect from filesystem.
-# Accepted values: copilot, claude, cursor, opencode, codex, gemini, windsurf, all
 targets:
 - claude
 - copilot
 dependencies:
-  apm: []
+  apm:
+  - git: Tillman32/kip
+    skills:
+    - prepare-software-release
   mcp: []
 includes: auto
 scripts: {}

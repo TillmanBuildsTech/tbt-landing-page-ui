@@ -1,0 +1,21 @@
+lockfile_version: '1'
+generated_at: '2026-05-24T07:14:57.610693+00:00'
+apm_version: 0.14.2
+dependencies:
+- repo_url: Tillman32/kip
+  host: github.com
+  resolved_commit: a8ff1f44d09f0a6aaeee6cf6bb31747e808c7bf1
+  package_type: apm_package
+  deployed_files:
+  - .agents/skills/prepare-software-release
+  - .agents/skills/ssh-exec
+  - .claude/rules/kip.md
+  - .claude/skills/prepare-software-release
+  - .claude/skills/ssh-exec
+  - .github/instructions/kip.instructions.md
+  deployed_file_hashes:
+    .claude/rules/kip.md: sha256:3ebe529459cd404ac5dfdafc4b8aaa501d0120d6f05a4c400ef2539e0b6c96d4
+    .github/instructions/kip.instructions.md: sha256:9442be6e37a016ea4506c0887b835b880e6f8d06e69d919d07e1d38051cf47c5
+  content_hash: sha256:9ba9094563150d0cf02c6bb532ecbc00ef5474c5cc449d1d81420a0d32ab8251
+  skill_subset:
+  - prepare-software-release
