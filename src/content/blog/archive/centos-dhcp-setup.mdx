@@ -1,0 +1,84 @@
+---
+title: "Minimal CentOS 6.4 Install: Configuring DHCP for IPv4"
+description: "Configure DHCP to obtain an IPv4 address on a freshly installed CentOS 6.4 system"
+date: 2015-06-29
+image: /images/blog/centos-dhcp.jpg
+tags:
+  - Linux
+  - Networking
+  - Archive
+draft: false
+---
+
+> **Historical Post:** This article was originally written in 2015. The technology discussed may be outdated or deprecated. Keeping it here for historical reference and to show I've been blogging since 2015!
+
+## Overview
+
+This tutorial explains how to configure DHCP to obtain an IPv4 address on a freshly installed CentOS 6.4 system for network connectivity.
+
+## Initial Setup
+
+First, gain root access:
+
+```bash
+sudo -su
+```
+
+Verify networking is enabled by checking the network configuration file:
+
+```bash
+cat /etc/sysconfig/network | grep -i network
+```
+
+The output should display `NETWORKING=YES`. If not, edit the file to enable it.
+
+## Configure eth0 Interface
+
+Edit the ethernet configuration file:
+
+```bash
+vi /etc/sysconfig/network-scripts/ifcfg-eth0
+```
+
+The default file typically contains:
+
+```
+DEVICE="eth0"
+HWADDR="08:00:27:07:9e:57"
+NM_CONTROLLED="YES"
+ONBOOT="NO"
+```
+
+Add DHCP configuration and modify existing settings:
+
+```
+DEVICE="eth0"
+HWADDR="08:00:27:07:9e:57"
+NM_CONTROLLED="NO"
+ONBOOT="YES"
+BOOTPROTO="dhcp"
+```
+
+## Restart Network Service
+
+Apply the configuration changes:
+
+```bash
+service network restart
+```
+
+Expected output confirms successful restart with the eth0 interface coming online.
+
+## Verify IPv4 Assignment
+
+Check the assigned IP address:
+
+```bash
+ifconfig
+```
+
+The output displays the newly obtained DHCP IP address (example: 192.168.0.110) with associated network information including broadcast address and subnet mask.
+
+## Summary
+
+The configuration is complete once the system obtains an IPv4 address via DHCP and successfully restarts network services.

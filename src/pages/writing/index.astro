@@ -1,0 +1,171 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import FooterBar from '../../components/FooterBar.astro';
+
+const posts = (await getCollection('blog', ({ id, data }) =>
+  !data.draft && !id.startsWith('archive/')
+)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+}
+---
+
+<BaseLayout title="Writing — TillmanBuildsTech" description="Practical posts on AI, automation, DevOps, and full-stack engineering by Brandon Tillman.">
+  <Nav />
+
+  <main class="writing-page">
+    <div class="container">
+      <header class="writing-header">
+        <p class="writing-label">// Writing</p>
+        <h1 class="writing-headline">The Blog</h1>
+        <p class="writing-sub">Practical posts on AI, automation, DevOps, and engineering.</p>
+      </header>
+
+      <ul class="post-list" role="list">
+        {posts.map((post) => (
+          <li class="post-row">
+            <div class="post-meta">
+              <time class="post-date" datetime={post.data.date.toISOString()}>
+                {formatDate(post.data.date)}
+              </time>
+              {post.data.tags && post.data.tags.length > 0 && (
+                <div class="post-tags" aria-label="Tags">
+                  {post.data.tags.map((tag) => (
+                    <span class="tag">{tag}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <a href={`/writing/${post.id}`} class="post-title-link">
+              <h2 class="post-title">{post.data.title}</h2>
+            </a>
+            <p class="post-desc">{post.data.description}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </main>
+
+  <FooterBar />
+</BaseLayout>
+
+<style>
+  .writing-page {
+    padding-top: calc(56px + var(--space-10));
+    padding-bottom: var(--space-16);
+    min-height: 100vh;
+  }
+
+  .writing-header {
+    max-width: 720px;
+    margin: 0 auto var(--space-8);
+  }
+
+  .writing-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-2);
+  }
+
+  .writing-headline {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    color: var(--text);
+    line-height: 1.15;
+    margin-bottom: var(--space-2);
+  }
+
+  .writing-sub {
+    font-family: var(--font-body);
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .post-list {
+    max-width: 720px;
+    margin: 0 auto;
+    list-style: none;
+  }
+
+  .post-row {
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-row:first-child {
+    border-top: 1px solid var(--border);
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-1);
+  }
+
+  .post-date {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .post-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--border);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .post-title-link {
+    display: block;
+    text-decoration: none;
+    margin-bottom: var(--space-1);
+  }
+
+  .post-title-link:hover .post-title {
+    color: var(--accent);
+  }
+
+  .post-title {
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.4;
+    transition: color 0.15s ease;
+  }
+
+  .post-desc {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    color: var(--muted);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  @media (max-width: 768px) {
+    .writing-page {
+      padding-top: calc(56px + var(--space-6));
+    }
+  }
+</style>

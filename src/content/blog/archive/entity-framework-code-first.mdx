@@ -1,0 +1,94 @@
+---
+title: "Entity Framework Code-First Tutorial: C# .NET MVC 5"
+description: "Introduction to Entity Framework's Code-First approach for generating databases from C# models"
+date: 2015-11-17
+image: /images/blog/entity-framework.jpg
+tags:
+  - .NET
+  - Entity Framework
+  - Archive
+draft: false
+---
+
+> **Historical Post:** This article was originally written in 2015. The technology discussed may be outdated or deprecated. Keeping it here for historical reference and to show I've been blogging since 2015!
+
+## Overview
+
+This tutorial introduces developers to Entity Framework's Code-First approach, a convention-based methodology where you write C# models to represent database entities, allowing Entity Framework to generate the database structure automatically.
+
+## Creating the Contact Model
+
+Start by creating a `Contact.cs` class in your Models folder with the following properties:
+
+```csharp
+public class Contact
+{
+    public int Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string PhoneNumber { get; set; }
+    public string Email { get; set; }
+}
+```
+
+## Setting Up the Database Context
+
+Create a DAL (Data Access Layer) folder and add `ContactsContext.cs`:
+
+```csharp
+public class ContactsContext : DbContext
+{
+    public virtual DbSet<Contact> Contacts { get; set; }
+}
+```
+
+The `DbContext` inheritance signals to Entity Framework which entities should be created as database tables.
+
+## Scaffolding the Web API Controller
+
+Use the scaffolding feature to generate controller code:
+
+1. Right-click Controllers folder -> Add Controller
+2. Select "Web API 2 Controller with actions, using Entity Framework"
+3. Specify Contact as the model and ContactsContext as the data context
+
+![Scaffolding dialog in Visual Studio](/images/blog/ef-scaffold-dialog.png)
+
+This generates full CRUD endpoints (GET, PUT, POST, DELETE) automatically.
+
+![Web API configuration options](/images/blog/ef-web-api-config.jpg)
+
+## Database Seeding
+
+Enable migrations via Package Manager Console:
+
+```powershell
+Enable-Migrations
+Add-Migration init
+```
+
+Modify the Seed method in `Configuration.cs`:
+
+```csharp
+protected override void Seed(EfTutorial.DAL.ContactsContext context)
+{
+    context.Contacts.AddOrUpdate(
+        new Contact {
+            FirstName = "Brandon",
+            LastName = "Tillman",
+            PhoneNumber = "(123) 456-789",
+            Email = "[email protected]"
+        }
+    );
+}
+```
+
+Apply changes:
+
+```powershell
+Update-Database
+```
+
+## Verification
+
+Access your API endpoint to confirm success and view seeded data in XML format.

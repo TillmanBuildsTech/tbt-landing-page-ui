@@ -1,0 +1,98 @@
+---
+title: "How to: Create Custom Code Snippets in Visual Studio Code"
+description: "Create custom code snippets accessible through Intellisense using JSON configuration files"
+date: 2016-06-16
+image: /images/blog/vscode-snippets.png
+tags:
+  - VS Code
+  - Productivity
+  - Archive
+draft: false
+---
+
+> **Historical Post:** This article was originally written in 2016. The technology discussed may be outdated or deprecated. Keeping it here for historical reference and to show I've been blogging since 2015!
+
+## Overview
+
+Visual Studio Code enables developers to create custom code snippets accessible through Intellisense, allowing rapid code generation without limitations on complexity. This feature leverages JSON configuration files to define reusable code templates.
+
+## Getting Started with Snippets
+
+To create a new snippet:
+
+1. Navigate to **File > Preferences > User Snippets**
+2. Select your desired programming language
+3. Edit the generated `<language>.json` file
+
+The application provides example templates within the file structure to guide users.
+
+## Example: Comment Block Snippet
+
+A practical demonstration uses a JavaScript template that generates formatted comment blocks:
+
+```json
+{
+  "Comment Block": {
+    "prefix": "cblock",
+    "body": [
+      "/*",
+      "|--------------------------------------------------------------------------",
+      "| ${1:Title}",
+      "|--------------------------------------------------------------------------",
+      "|",
+      "| ${2:Description}",
+      "|",
+      "*/"
+    ],
+    "description": "Creates a comment block for well documented code."
+  }
+}
+```
+
+![Comment block snippet in action](/images/blog/vscode-cblock-example.gif)
+
+**Key Components:**
+
+- **Object key:** Snippet name
+- **prefix:** Intellisense command trigger
+- **body:** Output template
+- **description:** Helper text in Intellisense menu
+
+## Variable Syntax
+
+The syntax `${number:placeholder}` enables dynamic content insertion. Tab key navigation cycles through variables in sequence. Variables referenced multiple times (e.g., `${1}` appearing twice) synchronize updates across all instances.
+
+## Advanced Example: Angular Factory Template
+
+For Angular 1.5 developers, a factory scaffold snippet demonstrates practical application:
+
+```json
+{
+  "Angular Factory": {
+    "prefix": "angularFactory",
+    "body": [
+      "function ${1:Name}(${2}) {",
+      "\tvar service = service || {};\n",
+      "\t${3}",
+      "};\n",
+      "${1}.$inject = ['${2}'];\n",
+      "angular",
+      "\t.module('${4:Name}')",
+      "\t.factory(${1})"
+    ],
+    "description": "Barebone Angular 1.5 factory."
+  }
+}
+```
+
+This template reuses `${1:Name}` across multiple locations, automatically populating the function declaration, injection array, and factory registration.
+
+![Angular factory snippet in action](/images/blog/vscode-angular-service-example.gif)
+
+## Benefits
+
+Custom snippets substantially accelerate development workflows by eliminating repetitive boilerplate code entry. The variable system supports intelligent placeholder management, reducing manual edits after snippet insertion.
+
+## Official Documentation
+
+Available at [code.visualstudio.com/docs/customization/userdefinedsnippets](https://code.visualstudio.com/docs/customization/userdefinedsnippets)

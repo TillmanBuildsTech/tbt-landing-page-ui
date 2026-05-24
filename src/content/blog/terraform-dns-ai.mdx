@@ -1,0 +1,356 @@
+---
+title: "This is how I trust AI to manage my DNS so I don't have to"
+description: "Stop clicking through DNS dashboards. Use Terraform + AI to manage Cloudflare DNS with version control, state tracking, and zero surprise deletions."
+date: 2026-03-27
+image: /images/blog/terraform-cloudflare-claude.png
+tags:
+  - Terraform
+  - DNS
+  - AI
+  - Cloudflare
+  - DevOps
+draft: false
+---
+
+DNS is one of those things that's easy to break and slow to debug. A typo in an MX record or a missing DKIM entry can silently kill email delivery for hours before you notice. Before this, I was managing DNS through a web dashboard like anyone else. 
+I wanted something better: repeatable, reviewable, and backed by version control.
+
+**Here's how I built a Terraform repo to manage Cloudflare DNS** across multiple domains, and why pairing it with AI makes it genuinely better — not just a novelty.
+
+## The Problem with AI + Direct API Access
+
+At first, you might think to give an AI an MCP server with Cloudflare API access and let it make DNS changes directly. It sounds powerful but you could run into real problems:
+
+- **No state tracking.** If the AI adds a record and you later ask it to "clean up old records," it has no reliable way to know what it created vs. what was already there.
+- **No review step.** The change happens immediately. DNS propagation is slow — you may not realize a record was accidentally deleted until 30 minutes later.
+- **No audit trail.** What changed? When? Why? Good luck reconstructing that from a chat history.
+
+Running AI through Terraform solves all three. The AI edits a config file. You review a plan. You decide whether to apply. Terraform tracks everything in state.
+
+## Architecture Overview
+
+The project is a Terraform monorepo with one directory per domain, a shared reusable module, and remote state stored in Cloudflare R2:
+
+```
+terraform-cloudflare/
+├── bootstrap/          # One-time setup: creates the R2 state bucket
+├── modules/
+│   └── domain/         # Shared module: DNS records + zone settings
+├── domains/
+│   ├── example.com/    # Template / reference domain
+│   ├── myblog.com/
+│   └── myclientsite.com/
+└── scripts/
+    ├── new-domain.sh       # Scaffold a new domain in seconds
+    └── import-domain.sh    # Pull existing DNS from Cloudflare API
+```
+
+Each domain is independently managed. You can plan and apply `myblog.com` without touching anything else. State is isolated per domain.
+
+## The Solution: A Reusable Terraform Module
+
+The `modules/domain/` module is the heart of the project. Every domain uses it:
+
+```hcl
+module "domain" {
+  source = "../../modules/domain"
+
+  domain      = var.domain
+  account_id  = var.account_id
+  dns_records = var.dns_records
+  ssl_mode    = var.ssl_mode
+}
+```
+
+The module handles:
+- **Zone lookup** — looks up the Cloudflare zone by domain name, no hardcoded zone IDs
+- **DNS records** — `for_each` over a list of record objects, creating or updating each one
+- **Zone settings** — SSL mode, always-use-HTTPS, minimum TLS version (1.2), TLS 1.3 — all enforced as code
+
+The only file you touch for a domain is its `terraform.tfvars`:
+
+```hcl
+domain   = "example.com"
+ssl_mode = "strict"
+
+dns_records = [
+  {
+    name    = "@"
+    type    = "A"
+    content = "192.0.2.1"
+    proxied = true
+    comment = "Root domain"
+  },
+  {
+    name    = "www"
+    type    = "CNAME"
+    content = "example.com"
+    proxied = true
+    comment = "WWW redirect"
+  },
+  {
+    name     = "@"
+    type     = "MX"
+    content  = "mail.example.com"
+    ttl      = 300
+    priority = 10
+  },
+  {
+    name    = "@"
+    type    = "TXT"
+    content = "v=spf1 include:_spf.example.com ~all"
+    ttl     = 300
+  },
+]
+```
+
+Flat, readable, no Terraform knowledge required to read or modify it. This is also the file that AI edits.
+
+## The AI Workflow
+
+This approach works with any AI assistant. I use Claude in VS Code — it reads the existing `terraform.tfvars` for context, understands the record structure without being told, and produces clean HCL that passes `terraform validate` on the first try. But the workflow is the same regardless of model:
+
+1. **Ask the AI** to add, update, or remove DNS records — in plain English
+2. **AI edits `terraform.tfvars`** — it understands the structure and produces valid HCL
+3. **Run `terraform plan`** — see exactly what will be created, modified, or destroyed
+4. **Review the diff** — three MX records added, one TXT changed, nothing deleted unexpectedly
+5. **Run `terraform apply`** — only after you've signed off
+
+Step 4 is the safety net. `terraform plan` shows the exact API calls Terraform will make before a single DNS record changes. If something looks wrong, fix the tfvars and plan again.
+
+The AI is a **config file editor**, not an **action taker**. That distinction matters.
+
+**Tip:** The repo includes a `CLAUDE.md` file at the root that gives Claude context about the project structure — how the module works, what the tfvars schema looks like, naming conventions. This isn't required, but it makes a real difference: Claude produces valid HCL faster, asks fewer clarifying questions, and doesn't need to re-read files to understand the layout. If you're using GitHub Copilot or another assistant, the equivalent is `.github/copilot-instructions.md`. Either way, a small context file up front saves token usage and back-and-forth over time.
+
+### Day-to-Day: It's Just Asking
+
+This is where the setup pays off in a way that's hard to appreciate until you've used it. You don't think about record syntax. You don't log in to Cloudflare. You don't navigate any UI. You just ask:
+
+> "Add a CNAME record pointing `api` to `my-app.vercel.app` with proxying disabled."
+
+> "Add an A record for `home` pointing to `192.168.1.100`."
+
+> "Point the root domain at my new server IP `203.0.113.42`."
+
+The AI updates the `terraform.tfvars`, you run `terraform plan` to confirm it looks right, and you apply. That's the whole thing. No password manager lookup, no waiting for a dashboard to load, no hunting for the right dropdown. The mental overhead of a DNS change went from "ugh, I have to go do that" to just asking a question.
+
+## AI-Native Commands: The Workflow Is the Documentation
+
+The repo ships with two custom [Claude Code](https://claude.ai/code) slash commands (`/new-domain` and `/import-domain`) that really take this further. Instead of a README with eight manual steps you have to follow in order, the workflow is encoded directly into commands that Claude executes, validates, and explains as it runs.
+
+This is a pattern worth calling out explicitly: rather than writing documentation *about* a process, you write a command *that is* the process. Claude reads the output of each step, interprets it, and tells you what to do next — including when something goes wrong. AI is now consulting you through the process. 
+
+### `/new-domain`
+
+Scaffold a brand-new domain from scratch:
+
+```
+/new-domain example.com
+```
+
+Claude validates your `.env`, runs the scaffold script, runs `terraform init` with the correct R2 backend config, and leaves you with a ready-to-edit `terraform.tfvars`. No Terraform knowledge required to get started. If init fails — wrong credentials, mismatched endpoint — Claude explains what to check and suggests a fix.
+
+### `/import-domain`
+
+Bring an existing Cloudflare domain under Terraform management:
+
+```
+/import-domain example.com
+```
+
+Claude runs the import script, reads the generated `terraform.tfvars` and `import-commands.sh`, and asks you to spot-check the records before anything touches state. After confirmation, it runs `terraform init`, executes all the import commands, and runs `terraform plan` to verify the import was clean.
+
+It also interprets the plan output for you:
+- "No changes" → you're done
+- Zone settings changes only → expected, safe to apply
+- Records showing as to-be-destroyed → something's wrong, stop and review
+
+You're never left staring at a cryptic error message wondering what to do next.
+
+### Why This Matters
+
+Shell scripts document *what to run*. These commands document *what to do* — including the decisions, the checks, and the error handling. Anyone can run `/import-domain myblog.com` without reading a README first. The command is the onboarding.
+
+## State in Cloudflare R2
+
+Terraform state is stored in **Cloudflare R2** — the same platform being managed. R2 exposes an S3-compatible API, so Terraform's built-in S3 backend works with a few extra flags:
+
+```hcl
+backend "s3" {
+  bucket = "terraform-state"
+  key    = "domains/example.com/terraform.tfstate"
+  region = "auto"
+
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_region_validation      = true
+  force_path_style            = true
+  # endpoint set at init time:
+  # terraform init \
+  #   -backend-config="endpoint=https://<account_id>.r2.cloudflarestorage.com"
+}
+```
+
+No S3 bucket. No GCS bucket. No extra infrastructure. R2 has no egress fees, so reading state is free. The only external dependency is Cloudflare itself.
+
+### The Bootstrap Problem
+
+There's a classic chicken-and-egg issue: the R2 bucket that stores Terraform state can't store *its own* state because it doesn't exist yet. The `bootstrap/` directory handles this with a one-time local-state run:
+
+```hcl
+resource "cloudflare_r2_bucket" "terraform_state" {
+  account_id = var.account_id
+  name       = "terraform-state"
+}
+```
+
+Run this once. Do not commit the local `terraform.tfstate` from bootstrap. Every domain after that uses the remote backend instead.
+
+## Importing Existing Domains
+
+If you already have DNS configured in Cloudflare, manually transcribing every record into tfvars is painful. The `import-domain.sh` script handles it:
+
+```sh
+./scripts/import-domain.sh example.com
+```
+
+It hits the Cloudflare API, pulls every DNS record and zone setting, and generates:
+- `terraform.tfvars` — ready to use, matching your current state
+- `import-commands.sh` — the `terraform import` commands to bring existing resources under Terraform management
+
+You go from "unmanaged domain" to "fully tracked by Terraform" in one command. After importing, `terraform plan` should show no changes.
+
+## Security
+
+All credentials are passed via environment variables — never stored in code:
+
+| Variable | Purpose |
+|---|---|
+| `CLOUDFLARE_EMAIL` | Cloudflare account login |
+| `CLOUDFLARE_API_KEY` | Global API key for the provider |
+| `AWS_ACCESS_KEY_ID` | R2 token access key (S3-compatible auth) |
+| `AWS_SECRET_ACCESS_KEY` | R2 token secret |
+| `TF_VAR_account_id` | Cloudflare account ID (auto-mapped by Terraform) |
+
+The `ssl_mode` variable has a built-in validation rule so you can't accidentally set an invalid value:
+
+```hcl
+validation {
+  condition     = contains(["off", "flexible", "full", "strict"], var.ssl_mode)
+  error_message = "ssl_mode must be one of: off, flexible, full, strict"
+}
+```
+
+Terraform rejects it at plan time, before anything touches the API.
+
+**On API tokens:** The table above uses `CLOUDFLARE_API_KEY`, which is your Cloudflare global API key — it has access to everything in your account. For production use, create a scoped API token instead (Cloudflare dashboard → My Profile → API Tokens → Create Token). Scope it to the specific zones you're managing with Edit permissions for Zone DNS and Zone Settings. A leaked global key is an account-wide problem. A leaked scoped token is a much smaller blast radius.
+
+## Bonus: Cloudflare Tunnels for Home Lab Hosting
+
+Say you're hosting a small business site on a server at home — no VPS, no cloud instance. The DNS looks like this:
+
+```hcl
+{
+  name    = "myclientsite.com"
+  type    = "CNAME"
+  content = "e7b08257-...cfargotunnel.com"
+  proxied = true
+},
+{
+  name    = "www"
+  type    = "CNAME"
+  content = "e7b08257-...cfargotunnel.com"
+  proxied = true
+},
+```
+
+That `cfargotunnel.com` UUID is a **Cloudflare Tunnel** — a persistent outbound connection from the home server to Cloudflare's edge. Instead of port forwarding and exposing a real IP, the tunnel calls out. Cloudflare terminates inbound HTTPS at the edge and forwards it through the tunnel to your server.
+
+The result:
+- **No port forwarding** on your router
+- **No public IP exposed** — `dig` the domain and you'll see Cloudflare's anycast IPs, nothing home-specific
+- **Your firewall can block all inbound traffic** except the tunnel's outbound connection
+- **Free TLS** from Cloudflare, no Certbot juggling
+
+If the tunnel ever gets recreated, the new ID is a one-line diff in the tfvars and a `terraform apply`. The DNS change is managed by the exact same Terraform setup.
+
+## Adding a New Domain
+
+Onboarding a new domain takes about two minutes:
+
+```sh
+# Export required environment variables before running any Terraform or script commands
+# source .env
+
+# Scaffold the directory
+./scripts/new-domain.sh newdomain.com
+
+# Edit the records
+# (AI fills in terraform.tfvars based on your requirements)
+
+# Initialize with remote state backend
+cd domains/newdomain.com
+terraform init \
+  -backend-config="endpoint=https://${TF_VAR_account_id}.r2.cloudflarestorage.com"
+
+# Review and apply
+terraform plan
+terraform apply
+```
+
+Every domain after the first follows the exact same pattern.
+
+## What I Learned / Gotchas
+
+**Import first, build second.** If you're bringing an existing domain under Terraform management, always import before making changes. Trying to reconcile drift after the fact is painful.
+
+**Plan output is your friend.** Get in the habit of reading `terraform plan` carefully before every apply. A plan that shows unexpected deletes is a sign something is wrong with your tfvars, not a reason to just re-run.
+
+**Cloudflare proxy vs. DNS-only matters.** `proxied = true` routes traffic through Cloudflare's CDN and hides your origin IP. `proxied = false` is a straight DNS record. Some record types (MX, TXT, SRV) can't be proxied — Terraform will error if you try.
+
+**Bootstrap state is manual.** This is a one time setup, the state is not meant to be committed or shared. Every domain added will use the remote backend.
+
+**The module handles zone lookup automatically.** You never hardcode zone IDs in your tfvars. The module looks them up by domain name using a `data` source. If you ever transfer a domain to a different Cloudflare account, just update the `account_id`.
+
+## Going Further
+
+Right now I run `terraform plan` and `terraform apply` locally. But this setup is ready for a CI/CD pipeline with minimal changes:
+
+1. **Open a PR** with changes to `terraform.tfvars`
+2. **`terraform plan` runs automatically** and posts the output as a PR comment
+3. **Review the plan** in the PR before merging
+4. **Merge** — triggers `terraform apply` automatically
+
+This turns DNS changes into a proper code review process with a full audit trail tied to commits. For a solo project it might be overkill, but if you're managing DNS for other people it's worth the setup investment.
+
+## Why This Approach
+
+The pitch isn't "Terraform is better than a web UI." It's that **infrastructure as code + AI assistance is better than AI alone**.
+
+- AI handles the tedious part: translating requirements into correct HCL
+- Terraform handles the safety part: showing exactly what will change and tracking state
+- You handle the judgment part: deciding whether the plan looks right before applying
+
+No surprise deletions. No state drift. No wondering what changed last Tuesday. Just a deliberate, reviewable, version-controlled apply.
+
+## Bonus: Visualizing Your Infrastructure
+
+If you want to see your Terraform configuration as an interactive dependency graph rather than a wall of HCL, [Blast Radius](https://28mm.github.io/blast-radius-docs/) is worth installing.
+
+```sh
+pip3 install blastradius
+brew install graphviz
+blast-radius --serve /path/to/terraform-cloudflare
+```
+
+It renders your resources as interactive nodes — hover over one and it highlights everything that depends on it or that it depends on. Useful for understanding the shape of what you've built, documenting it for someone else, or sanity-checking that a change won't ripple somewhere unexpected.
+
+It's entirely optional. But if you're a visual person or you're handing this off to someone who doesn't read HCL, it's a much friendlier way to explore the infrastructure than staring at config files.
+
+## Get the Code
+
+You can find a working example of this setup here on GitHub: [github.com/Tillman32/terraform-cloudflare-example](https://github.com/Tillman32/terraform-cloudflare-example)
+
+The `example.com` domain directory is a full working template covering A, CNAME, MX, and TXT records. Run `/new-domain` or `/import-domain` for your first real domain and you're off.
+
+I appreciate you making it this far. If this helped, I'd love to hear about it!

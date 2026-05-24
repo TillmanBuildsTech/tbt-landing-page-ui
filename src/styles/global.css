@@ -101,6 +101,8 @@ input, textarea, select {
   font-style: normal;
   color: var(--accent);
   margin-right: 5px;
+  display: inline-block;
+  animation: blink 1s step-end infinite;
 }
 .nav__links {
   display: flex;
@@ -696,6 +698,7 @@ input, textarea, select {
 /* ─── prefers-reduced-motion ──────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   #glyph-lattice { display: none; }
+  .nav__logo em   { animation: none; opacity: 1; }
   .term-cursor   { animation: none; opacity: 1; }
   * { transition: none !important; }
 }

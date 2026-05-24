@@ -1,0 +1,80 @@
+---
+title: "Easy $http Requests in AngularJS"
+description: "Learn how to use AngularJS's built-in $http service to make web requests with factories and dependency injection"
+date: 2015-06-29
+image: /images/blog/angularjs-http.jpg
+tags:
+  - AngularJS
+  - JavaScript
+  - Archive
+draft: false
+---
+
+> **Historical Post:** This article was originally written in 2015. The technology discussed may be outdated or deprecated. Keeping it here for historical reference and to show I've been blogging since 2015!
+
+## Overview
+
+This post explains how to leverage AngularJS's built-in `$http` service to make web requests. The following demonstrates a practical, step-by-step approach to implementing HTTP communication.
+
+## Initial Setup
+
+Begin by establishing a basic AngularJS module:
+
+```javascript
+(function(){
+    var app = angular.module('ExampleHttpRequest', []);
+})();
+```
+
+## Factory Pattern Implementation
+
+A factory service is created to encapsulate HTTP operations and provide reusable methods across the application:
+
+```javascript
+app.factory('webService', ['$http', function($http){
+    var url = 'http://example.webservice.com/api';
+    return {
+        get: function(){
+            return $http.get(url);
+        },
+        update: function(data_object){
+            return $http.post(url, data_object)
+        }
+    }
+}]);
+```
+
+## Controller Integration
+
+A controller accesses the factory and binds HTTP responses to the view scope:
+
+```javascript
+app.controller('ExampleController', ['webService', '$scope',
+    function(webService, $scope){
+        $scope.getData = function(){
+            webService.get()
+                .success(function(response){
+                    $scope.returnedData = response;
+                })
+                .error(function(error){
+                    // Handle error
+                })
+        };
+
+        $scope.updateData = function(name, email){
+            var payload = { name: name, email: email };
+            webService.update(payload)
+                .success(function(response){
+                    console.log(response);
+                })
+                .error(function(error){
+                    // Handle error
+                })
+        };
+    }
+]);
+```
+
+## Benefits
+
+The approach demonstrates dependency injection and promise-based asynchronous handling for both GET and POST operations, providing clean separation between HTTP logic and controller code.

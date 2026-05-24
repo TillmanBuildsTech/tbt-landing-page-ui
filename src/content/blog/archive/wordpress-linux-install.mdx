@@ -1,0 +1,51 @@
+---
+title: "WordPress Linux: 5 Minute Install Command Line"
+description: "Quickly install WordPress on an existing LAMP stack using command-line operations"
+date: 2015-09-01
+image: /images/blog/wordpress-linux.jpg
+tags:
+  - WordPress
+  - Linux
+  - Archive
+draft: false
+---
+
+> **Historical Post:** This article was originally written in 2015. The technology discussed may be outdated or deprecated. Keeping it here for historical reference and to show I've been blogging since 2015!
+
+## Overview
+
+This guide demonstrates how to quickly install WordPress on an existing LAMP stack (Linux, Apache, MySQL, PHP) using command-line operations.
+
+## Installation Steps
+
+### 1. Switch to Root User
+
+```bash
+sudo su -
+```
+
+### 2. Download Latest WordPress
+
+```bash
+cd /tmp && wget http://wordpress.org/latest.tar.gz
+```
+
+### 3. Extract to Web Directory
+
+```bash
+tar -xvzf latest.tar.gz
+```
+
+Extract the WordPress files to your web directory, typically located within `/var/www/`.
+
+### 4. Configure WordPress
+
+Within the extracted WordPress directory, locate the `wp-config-sample.php` file. Create a working copy and edit the configuration:
+
+```bash
+cp wp-config-sample.php wp-config.php && vim wp-config.php
+```
+
+## Summary
+
+This tutorial provides a straightforward approach to deploying WordPress on Linux servers, requiring only a few terminal commands to download, extract, and configure the installation. This method assumes an existing LAMP environment is already operational.

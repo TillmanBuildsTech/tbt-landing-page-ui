@@ -1,0 +1,80 @@
+---
+title: "Xamarin Forms How-to: Navigation with Slide Out Menu"
+description: "Create a MasterDetailPage application featuring a hamburger-style slide-out menu in Xamarin Forms"
+date: 2017-08-15
+image: /images/blog/xamarin-slide-menu.png
+tags:
+  - Xamarin
+  - Mobile
+  - Archive
+draft: false
+---
+
+> **Historical Post:** This article was originally written in 2017. The technology discussed may be outdated or deprecated. Keeping it here for historical reference and to show I've been blogging since 2015!
+
+## Introduction
+
+Xamarin Forms is a powerful, cross platform mobile application framework. A key challenge in cross-platform development is maintaining consistent user experience across platforms. This tutorial demonstrates creating a MasterDetailPage application featuring a hamburger-style slide-out menu.
+
+## Prerequisites
+
+The solution requires a functional Xamarin development environment. The tutorial uses Visual Studio for Mac but remains framework-agnostic, allowing adaptation to various MVVM frameworks.
+
+## Project Setup
+
+Create a new Xamarin Forms Multi Platform application via File > New Solution > Multiplatform > App > Blank Forms App. Both PCL and shared project approaches work equally well for this implementation.
+
+## Implementation Structure
+
+### Directory Organization
+
+Create a 'Pages' directory within the shared project to organize application pages.
+
+### Key Components
+
+The MainMenu class inherits from MasterDetailPage and manages menu navigation logic:
+
+```csharp
+public partial class MainMenu : MasterDetailPage
+{
+    public List<MainMenuItem> MainMenuItems { get; set; }
+
+    public MainMenu()
+    {
+        BindingContext = this;
+        MainMenuItems = new List<MainMenuItem>()
+        {
+            new MainMenuItem() { Title = "Page One", Icon = "menu_inbox.png", TargetType = typeof(PageOne) },
+            new MainMenuItem() { Title = "Page Two", Icon = "menu_stock.png", TargetType = typeof(PageTwo) }
+        };
+        Detail = new NavigationPage(new PageOne());
+        InitializeComponent();
+    }
+
+    public void MainMenuItem_Selected(object sender, SelectedItemChangedEventArgs e)
+    {
+        var item = e.SelectedItem as MainMenuItem;
+        if (item != null)
+        {
+            if (item.Title.Equals("Page One"))
+                Detail = new NavigationPage(new PageOne());
+            else if (item.Title.Equals("Page Two"))
+                Detail = new NavigationPage(new PageTwo());
+            MenuListView.SelectedItem = null;
+            IsPresented = false;
+        }
+    }
+}
+```
+
+### XAML Structure
+
+The interface uses a MasterDetailPage with a ContentPage master containing a StackLayout and ListView for menu items, styled with specific background colors (#616161 for header, #f5f5f5 for menu).
+
+## Technical Context
+
+Xamarin is using the code inside the shared project/PCL to transpile versions of iOS and Android, leveraging XAML design patterns familiar to .NET desktop developers.
+
+## Resources
+
+Complete code is available on [GitHub](https://github.com/Tillman32/XFMenu) for free use as a foundation for mobile applications.

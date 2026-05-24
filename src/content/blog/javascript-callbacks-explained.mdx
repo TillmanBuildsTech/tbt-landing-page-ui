@@ -1,0 +1,247 @@
+---
+title: "JavaScript Callbacks Explained (Without the Confusion)"
+description: "Understand how callbacks work by building them yourself—no async/await needed yet"
+date: 2016-03-09
+image: /images/blog/javascript-callbacks.png
+tags:
+  - JavaScript
+  - Fundamentals
+draft: false
+---
+
+Callbacks confused me for months when I started JavaScript. Every tutorial said "just pass a function as an argument," but nobody explained *why* or when you'd actually use them. Here's the explanation I wish I'd found.
+
+## The Problem
+
+JavaScript is built on asynchronous operations—API calls, file reads, timers—but when you're coming from synchronous languages like C# or Java, the callback pattern feels backwards.
+
+You write code like this:
+
+```javascript
+getData(function(result) {
+    console.log(result);
+});
+```
+
+And you think: "Why not just `let result = getData()` and be done with it?"
+
+Because JavaScript doesn't wait. If `getData()` takes 2 seconds, your code keeps running. Callbacks are how you say "run this code when the data finally arrives."
+
+## What Are Callbacks, Really?
+
+A callback is just a function you pass to another function. That's it.
+
+The key insight: **JavaScript treats functions as values.** You can:
+- Store them in variables
+- Pass them as arguments
+- Return them from functions
+
+So when you pass a function as an argument, the receiving function can *call it back* later (hence "callback").
+
+## The Simplest Example
+
+```javascript
+function sayHello(callback) {
+    callback("Hello");
+}
+
+sayHello(function(greeting) {
+    console.log(greeting + ", World!");
+});
+
+// Output: Hello, World!
+```
+
+Here's what's happening:
+1. `sayHello` takes one parameter: `callback` (which is a function)
+2. Inside `sayHello`, we call `callback("Hello")`, passing `"Hello"` as an argument
+3. The anonymous function we passed receives `"Hello"` as `greeting` and logs it
+
+That anonymous function is the callback.
+
+## Why Would You Ever Do This?
+
+Callbacks shine when you can't return a value immediately. Here's a more realistic example:
+
+```javascript
+function fetchUserData(userId, callback) {
+    // Imagine this hits a database or API
+    setTimeout(function() {
+        let user = { id: userId, name: "Brandon" };
+        callback(user);
+    }, 1000); // Simulates 1-second delay
+}
+
+fetchUserData(42, function(user) {
+    console.log("User loaded:", user.name);
+});
+
+console.log("This runs first because fetchUserData doesn't block!");
+```
+
+Output:
+```
+This runs first because fetchUserData doesn't block!
+User loaded: Brandon
+```
+
+The callback lets you say "when the data arrives, do this with it"—without freezing your entire program while waiting.
+
+## A More Useful Example: Language Greetings
+
+```javascript
+function sayHello(language, callback) {
+    let greetings = {
+        "English": "Hello",
+        "French": "Bonjour",
+        "German": "Guten Tag",
+        "Spanish": "Hola"
+    };
+
+    let greeting = greetings[language];
+
+    if (greeting) {
+        callback(greeting);
+    } else {
+        callback("Hello"); // Default to English
+    }
+}
+
+sayHello("German", function(greeting) {
+    console.log(greeting + ", World!");
+});
+
+// Output: Guten Tag, World!
+```
+
+Now `sayHello` doesn't need to know what to do with the greeting—it just finds it and hands it off to your callback.
+
+## Callbacks with Error Handling
+
+Real-world callbacks often use the "error-first" pattern:
+
+```javascript
+function getUserById(id, callback) {
+    setTimeout(function() {
+        if (id < 1) {
+            callback("Invalid user ID", null);
+        } else {
+            callback(null, { id: id, name: "Brandon" });
+        }
+    }, 500);
+}
+
+getUserById(0, function(error, user) {
+    if (error) {
+        console.error("Error:", error);
+    } else {
+        console.log("User:", user.name);
+    }
+});
+```
+
+Convention: the first parameter is `error` (null if no error), the second is the actual data.
+
+## What I Learned / Gotchas
+
+**Callback hell is real.** Nesting callbacks gets ugly fast:
+
+```javascript
+getData(function(data) {
+    processData(data, function(processed) {
+        saveData(processed, function(result) {
+            sendEmail(result, function(status) {
+                console.log("Finally done!");
+            });
+        });
+    });
+});
+```
+
+This is why Promises and async/await were invented. But you need to understand callbacks first—Promises use them under the hood.
+
+**`this` gets weird in callbacks.** If you're using callbacks with object methods, `this` won't be what you expect:
+
+```javascript
+let user = {
+    name: "Brandon",
+    greet: function(callback) {
+        callback(this.name);
+    }
+};
+
+// This works
+user.greet(function(name) {
+    console.log("Hello,", name);
+});
+
+// But this might not (depending on context)
+let greetFunc = user.greet;
+greetFunc(function(name) {
+    console.log("Hello,", name); // `this.name` is undefined
+});
+```
+
+Use `.bind(this)` or arrow functions to fix it.
+
+**Arrow functions changed callbacks.** Modern JavaScript uses arrow functions for cleaner syntax:
+
+```javascript
+sayHello("French", (greeting) => {
+    console.log(greeting + ", World!");
+});
+```
+
+Same behavior, less typing.
+
+## Real-World Use Cases
+
+You've been using callbacks without realizing it:
+
+```javascript
+// Array methods use callbacks
+[1, 2, 3].map(function(num) {
+    return num * 2;
+});
+
+// Event listeners use callbacks
+button.addEventListener('click', function() {
+    console.log("Button clicked!");
+});
+
+// setTimeout uses callbacks
+setTimeout(function() {
+    console.log("One second later...");
+}, 1000);
+```
+
+All of these: you pass a function, and something else calls it later.
+
+## Going Further
+
+Callbacks are foundational, but modern JavaScript has better tools for async code:
+
+**Promises** (ES6):
+```javascript
+fetch('/api/user')
+    .then(response => response.json())
+    .then(user => console.log(user))
+    .catch(error => console.error(error));
+```
+
+**Async/Await** (ES2017):
+```javascript
+async function getUser() {
+    let response = await fetch('/api/user');
+    let user = await response.json();
+    console.log(user);
+}
+```
+
+But these are just syntactic sugar over callbacks. Understanding callbacks means you understand what Promises and async/await are doing under the hood.
+
+## Resources
+
+- [Full code examples on GitHub Gist](https://gist.github.com/Tillman32/021837cba82ffc965073)
+- [MDN: Callback Functions](https://developer.mozilla.org/en-US/docs/Glossary/Callback_function)
+- [You Don't Know JS: Async & Performance](https://github.com/getify/You-Dont-Know-JS/blob/1st-ed/async%20%26%20performance/README.md) (deep dive)
