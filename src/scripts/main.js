@@ -178,15 +178,15 @@ if (latticeEl &&
 
 // ── 3. TERMINAL TYPEWRITER ───────────────────────────────────────
 const termBody = document.getElementById('terminal-body');
-const terminalHost = 'brandon@tbt';
+const terminalHost = 'brandon@TillmanBuildsTech';
 if (termBody && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const lines = [
     { type: 'cmd',   text: `${terminalHost} ~ $ ls capabilities/` },
-    { type: 'out',   text: 'ai_agents/  automation/  web_apps/  devops/' },
+    { type: 'out',   text: 'ai/  automation/  fullstack/  devops/' },
     { type: 'gap' },
     { type: 'cmd',   text: `${terminalHost} ~ $ building AI agents...` },
-    { type: 'check', text: '✓ LLM pipelines, RAG, agents, skills, mcp' },
-    { type: 'check', text: '✓ CoPilot · Anthropic · OpenAi & local models' },
+    { type: 'check', text: '✓ agents, skills, mcp, workflows' },
+    { type: 'check', text: '✓ Claude · CoPilot · OpenAi & local models' },
     { type: 'gap' },
     { type: 'cmd',   text: `${terminalHost} ~ $ shipping automation...` },
     { type: 'check', text: '✓ GitHub Actions · Custom Integrations · n8n' },
@@ -245,17 +245,17 @@ if (termBody && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) 
 } else if (termBody) {
   termBody.innerHTML = `
     <div class="term-line term-cmd">${terminalHost} ~ $ ls capabilities/</div>
-    <div class="term-line term-out">ai_agents/  automation/  web_apps/  devops/</div>
+    <div class="term-line term-out">ai/  automation/  fullstack/  devops/</div>
     <div style="height:6px"></div>
-    <div class="term-line term-cmd">${terminalHost} ~ $ building AI agents...</div>
-    <div class="term-line term-detail">✓ LLM pipelines, RAG, skills, mcp</div>
-    <div class="term-line term-detail">✓ CoPilot &middot; Anthropic &middot; OpenAi &amp; local models</div>
+    <div class="term-line term-cmd">${terminalHost} ~ $ building AI...</div>
+    <div class="term-line term-detail">✓ agents, skills, mcps, pipelines</div>
+    <div class="term-line term-detail">✓ Claude &middot; CoPilot &middot; OpenAi &amp; local models</div>
     <div style="height:6px"></div>
     <div class="term-line term-cmd">${terminalHost} ~ $ shipping automation...</div>
     <div class="term-line term-detail">✓ GitHub Actions &middot; Custom Integrations &middot; n8n</div>
     <div class="term-line term-detail">✓ AI driven, custom workflows, manual tasks</div>
     <div style="height:6px"></div>
-    <div class="term-line term-cmd">${terminalHost} ~ $ deploying infrastructure...</div>
+    <div class="term-line term-cmd">${terminalHost} ~ $ deploying infra...</div>
     <div class="term-line term-detail">✓ Docker &middot; Vercel &middot; AWS &middot; GCP &middot; Azure</div>
     <div class="term-line term-detail">✓ Zero-downtime, IaC, Scalable</div>
     <div style="height:6px"></div>

@@ -2,6 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import FooterBar from '../components/FooterBar.astro';
+import { Image } from 'astro:assets';
+// import brandonTillmanImage from '../images/brandon-tillman-tbt.png';
+import brandonTillmanImage from '../images/brandon-tillman.png';
 ---
 
 <BaseLayout
@@ -15,24 +18,24 @@ import FooterBar from '../components/FooterBar.astro';
 
       <header class="page-header">
         <p class="section-label">// About</p>
-        <h1 class="page-header__headline">Builder. Problem Solver. Independent.</h1>
+        <h1 class="page-header__headline">I solve hard problems. That's what I do.</h1>
       </header>
 
       <!-- Bio -->
       <section class="about-bio" aria-labelledby="about-name">
         <div class="about-bio__left">
-          <div class="about-bio__avatar" aria-hidden="true">
-            <span class="about-bio__avatar-text">photo</span>
+          <div class="about-bio__avatar">
+            <Image src={brandonTillmanImage} alt="Brandon Tillman" width={200} height={200} />
           </div>
           <div>
             <h2 class="about-bio__name" id="about-name">Brandon Tillman</h2>
             <p class="about-bio__role">Independent Consultant</p>
             <div class="bio__links" style="margin-top: 12px; justify-content: flex-start;">
-              <a href="https://github.com/Tillman32" class="bio__link" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
+              <a href="https://github.com/TillmanBuildsTech" class="bio__link" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
                 <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
                 GitHub
               </a>
-              <a href="https://www.linkedin.com/in/brandon-tillman/" class="bio__link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+              <a href="https://www.linkedin.com/in/tillman-brandon/" class="bio__link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 11.268h-3v-5.604c0-1.337-.026-3.062-1.867-3.062s-2.154 1.459-2.154 2.965v5.701h-3v-10h2.881v1.367h.041c.401-.761 1.381-1.562 2.846-1.562 3.042 0 3.603 2.001 3.603 4.599v5.596z"/></svg>
                 LinkedIn
               </a>
@@ -47,7 +50,7 @@ import FooterBar from '../components/FooterBar.astro';
         <div class="about-bio__text">
           <p>
             I'm Brandon Tillman — an independent consultant with 15+ years of engineering
-            experience across AI, automation, web development, and DevOps.
+            experience across AI, automation, full-stack development, and DevOps.
           </p>
           <p>
             I started building software as a teenager and never stopped. I've worked across
@@ -55,10 +58,7 @@ import FooterBar from '../components/FooterBar.astro';
             internal tools that quietly save companies thousands of hours a year.
           </p>
           <p>
-            Today I work directly with founders, operators, and engineering leads who need
-            practical systems built fast — without the overhead of an agency or the risk of
-            a full-time hire. My goal is always the same: build the thing that actually solves
-            the problem, then make sure it keeps working.
+            Today I work directly with founders, operators, and engineering leads on the hard problems — the ones that need deep expertise, not a quick fix. Without the overhead of an agency or the risk of a full-time hire, you get someone who understands enterprise infrastructure, complex deployments, and scaling systems that matter. My goal is always the same: solve the actual problem and build something that stays reliable.
           </p>
           <p>Based in the US. Available for remote projects worldwide.</p>
         </div>
@@ -119,6 +119,22 @@ import FooterBar from '../components/FooterBar.astro';
         </div>
       </section>
 
+      <!-- Hard Problems -->
+      <section aria-labelledby="problems-heading" style="margin-top: var(--space-10);">
+        <p class="section-label" id="problems-heading">// The Work</p>
+        <div style="margin-top: var(--space-4);">
+          <p style="line-height: 1.7; margin-bottom: var(--space-3);">
+            In enterprise, I've built E2E testing platforms, orchestrated Linux-to-Windows deployments over WinRM, debugged complex networking and load balancing issues, scaled Kubernetes clusters both on-prem and in cloud, implemented sophisticated feature releases, and solved infrastructure problems that most consultants won't touch.
+          </p>
+          <p style="line-height: 1.7; margin-bottom: var(--space-3);">
+            I'm also building in the open: <a href="https://github.com/TillmanBuildsTech/serv" style="color: var(--color-accent); text-decoration: underline;">serv</a> is a modern replacement for Windows service management that runs across Windows, Linux, and macOS. I've designed Cloudflare DNS automation with Claude AI agents and Terraform. These aren't toy projects — they're production-grade tools solving real infrastructure headaches.
+          </p>
+          <p style="line-height: 1.7;">
+            This is who you're hiring: someone who understands systems at depth, knows how to build things that last, and can handle the problems your team hasn't solved yet.
+          </p>
+        </div>
+      </section>
+
       <!-- How I Work -->
       <section aria-labelledby="process-heading" style="margin-top: var(--space-10);">
         <p class="section-label" id="process-heading">// Process</p>
@@ -139,7 +155,7 @@ import FooterBar from '../components/FooterBar.astro';
           <div class="process-step">
             <p class="process-step__num">03 — Build &amp; Ship</p>
             <h3 class="process-step__title">Build &amp; Ship</h3>
-            <p class="process-step__desc">I build it, test it, document it, and hand it off. Then I stay available.</p>
+            <p class="process-step__desc">I build it thoroughly, test it rigorously, document it clearly, and hand it off production-ready. Then I stay available for support as your system grows.</p>
           </div>
 
         </div>

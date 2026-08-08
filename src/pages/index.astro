@@ -2,6 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import FooterBar from '../components/FooterBar.astro';
+import { Image } from 'astro:assets';
+import brandonTillmanImage from '../images/brandon-tillman.png';
+// import brandonTillmanImage from '../images/brandon-tillman-tbt.png';
 ---
 
 <BaseLayout>
@@ -15,12 +18,12 @@ import FooterBar from '../components/FooterBar.astro';
 
     <div class="hero__inner">
       <div class="hero__left">
-        <p class="hero__kicker">// Available for projects</p>
+        <p class="hero__kicker">// Solo Expert</p>
         <h1 class="hero__headline" data-pretext>
-		   I build practical tech that <em>actually works</em> for your business
+		   I solve the complex problems your teams never get to
         </h1>
-        <p class="hero__sub">Independent consultant</p>
-        <p class="hero__desc">AI · Automation · Web · DevOps</p>
+        <p class="hero__sub">Independent consultant with enterprise depth</p>
+        <p class="hero__desc">AI · Automation · Infrastructure · DevOps</p>
         <div class="hero__ctas">
           <a href="#contact" class="btn-primary">$ start_a_project</a>
           <a href="/work" class="btn-ghost">See recent work →</a>
@@ -34,7 +37,7 @@ import FooterBar from '../components/FooterBar.astro';
             <span class="terminal__dot terminal__dot--yellow"></span>
             <span class="terminal__dot terminal__dot--green"></span>
           </div>
-          <span class="terminal__title">brandon@tbt ~ zsh</span>
+          <span class="terminal__title">brandon@TillmanBuildsTech ~ zsh</span>
           <span style="width:52px"></span>
         </div>
         <div class="terminal__body" id="terminal-body" aria-live="polite">
@@ -59,6 +62,7 @@ import FooterBar from '../components/FooterBar.astro';
             Custom LLM integrations, autonomous agents, RAG pipelines, and production eval frameworks. OpenAI, Anthropic, or open-weight models.
           </p>
           <span class="service-card__tag">ai_agents/</span>
+          <a href="/services/ai-agents" class="service-card__link">Read more →</a>
         </article>
 
         <article class="service-card">
@@ -68,6 +72,7 @@ import FooterBar from '../components/FooterBar.astro';
             End-to-end workflow automation replacing manual ops: n8n, Make, Python scripts, and custom API integrations that actually stay running.
           </p>
           <span class="service-card__tag">automation/</span>
+          <a href="/services/automation" class="service-card__link">Read more →</a>
         </article>
 
         <article class="service-card">
@@ -77,6 +82,7 @@ import FooterBar from '../components/FooterBar.astro';
             Fast, purpose-built web apps and internal tools. React, Next.js, Node. Emphasis on performance and developer handoff quality.
           </p>
           <span class="service-card__tag">web_apps/</span>
+          <a href="/services/web-apps" class="service-card__link">Read more →</a>
         </article>
 
         <article class="service-card">
@@ -86,6 +92,7 @@ import FooterBar from '../components/FooterBar.astro';
             Infrastructure setup, containerization, CI/CD pipelines, and cloud deployments. From zero to production-ready with monitoring.
           </p>
           <span class="service-card__tag">devops/</span>
+          <a href="/services/devops" class="service-card__link">Read more →</a>
         </article>
 
       </div>
@@ -100,15 +107,14 @@ import FooterBar from '../components/FooterBar.astro';
       <div class="bio__inner">
 
         <div class="bio__left">
-          <div class="bio__avatar" aria-hidden="true">
-            <span class="bio__avatar-placeholder">photo</span>
+          <div class="bio__avatar">
+            <Image src={brandonTillmanImage} alt="Brandon Tillman" width={112} height={112} />
           </div>
           <div class="bio__content">
             <h2 class="bio__name" id="bio-heading">Brandon Tillman</h2>
             <p class="bio__role">Independent Consultant</p>
             <p class="bio__text" data-pretext>
-              I've spent the last several years at the intersection of AI, automation, and software engineering. I work with startups and small businesses to build practical systems that scale. 
-			        With a lifelong love for coding and problem-solving, I thrive on turning complex challenges into elegant, maintainable solutions that drive real results.
+              I'm a solo expert with 15+ years building systems at scale — from enterprise infrastructure to AI-driven automation. I solve the problems that require deep expertise: complex deployments, production systems, infrastructure challenges. Not agencies. Not juniors. Just me, thorough work, and systems that actually work.
             </p>
             <div class="bio__links">
               <a href="https://brandontillman.com" class="bio__link" target="_blank" rel="noopener noreferrer" aria-label="Personal blog">
@@ -129,16 +135,19 @@ import FooterBar from '../components/FooterBar.astro';
 
         <div class="bio__stats" aria-label="Key stats">
           <div>
-            <div class="bio__stat-num">48 hr</div>
-            <div class="bio__stat-label">Response guaranteed</div>
+            <div class="bio__stat-num">15+</div>
+            <div class="bio__stat-label">Years building at scale</div>
           </div>
           <div>
-            <div class="bio__stat-num">15 yr</div>
-            <div class="bio__stat-label">Engineering experience</div>
+            <div class="bio__stat-num">Enterprise</div>
+            <div class="bio__stat-label">Problems solved solo</div>
           </div>
           <div>
-            <div class="bio__stat-num">&lt; 1 wk</div>
-            <div class="bio__stat-label">Typical kickoff</div>
+            <div class="bio__stat-num">Open source</div>
+            <div class="bio__stat-label">Infrastructure tools</div>
+          </div>
+          <div style="margin-top: auto; padding-top: var(--space-4);">
+            <a href="/about" class="bio__read-more">Read more →</a>
           </div>
         </div>
 
@@ -154,8 +163,8 @@ import FooterBar from '../components/FooterBar.astro';
       <div class="contact__grid">
 
         <div>
-          <h2 class="contact__headline" id="contact-heading">Let's build something awesome together!</h2>
-          <p class="contact__sub">Tell me about your project and I'll get back to you within 48 hours.</p>
+          <h2 class="contact__headline" id="contact-heading">Let's solve it together.</h2>
+          <p class="contact__sub">Tell me about your hard problem. I'll review it thoroughly and let you know if it's the right fit.</p>
           <form id="contact-form" method="POST" action="/api/contact" novalidate aria-label="Contact form">
             <div class="form-row">
               <div class="form-group">
@@ -180,7 +189,7 @@ import FooterBar from '../components/FooterBar.astro';
             </div>
             <div class="form-group">
               <label class="form-label" for="message">Message</label>
-              <textarea class="form-textarea" id="message" name="message" placeholder="Describe what you're trying to build..." rows="4" required></textarea>
+              <textarea class="form-textarea" id="message" name="message" placeholder="What's the hard problem you're trying to solve?" rows="4" required></textarea>
             </div>
             <button type="submit" class="btn-submit">$ send_message</button>
             <div id="form-status" role="alert" aria-live="polite" style="margin-top: 12px; font-family: var(--font-mono); font-size: 13px;"></div>
@@ -188,8 +197,8 @@ import FooterBar from '../components/FooterBar.astro';
         </div>
 
         <div>
-          <h3 class="newsletter__headline">Stay in the loop.</h3>
-          <p class="newsletter__sub">Occasional notes on AI, automation, and building — no noise, no sales.</p>
+          <h3 class="newsletter__headline">Deep dives, not noise.</h3>
+          <p class="newsletter__sub">Occasional writing on hard infrastructure problems, AI at scale, and things I build. Substance only.</p>
           <form id="newsletter-form" class="newsletter__form" method="POST" action="/api/subscribe" aria-label="Newsletter subscribe">
             <input class="newsletter__input" type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
             <button type="submit" class="btn-subscribe">subscribe →</button>
