@@ -1,6 +1,7 @@
 .astro/
 .docs/
 .gstack/
+.vercel/
 
 node_modules/
 
