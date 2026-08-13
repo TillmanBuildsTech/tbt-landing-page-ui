@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import FooterBar from '../components/FooterBar.astro';
+---
+
+<BaseLayout
+  title="Projects — TillmanBuildsTech"
+  description="Selected projects and case studies from Brandon Tillman — AI agents, automation, web apps, and DevOps."
+>
+  <Nav />
+
+  <main class="page-content">
+    <div class="container">
+
+      <header class="page-header" id="projects">
+        <p class="section-label">// Projects</p>
+        <h1 class="page-header__headline">What I've Built</h1>
+        <p class="page-header__sub">Selected projects and case studies.</p>
+      </header>
+
+      <div class="work-grid">
+
+        <article class="work-card">
+          <span class="work-card__tag">Fledgling Leads/</span>
+          <h2 class="work-card__title">Business Formation Intelligence and Lead Enrichment</h2>
+          <p class="work-card__desc">
+            We capture every LLC and corporation filed with the Arizona Corporation Commission, classify each one by industry, and enrich it with owner and contact data — delivered as clean, CRM-ready leads.
+          </p>
+          <div class="work-card__chips">
+            <span class="tech-chip">Hermes Agent</span>
+            <span class="tech-chip">Python</span>
+            <span class="tech-chip">Info Gathering</span>
+            <span class="tech-chip">Supabase / Vercel</span>
+            <span class="tech-chip">CI/CD pipeline with DB migrations</span>
+          </div>
+          <div class="work-card__meta">
+            <span class="work-card__client">client: Self</span>
+            <a href="https://fledglingleads.com/" class="work-card__cta">View Project →</a>
+          </div>
+        </article>
+
+        <article class="work-card">
+          <span class="work-card__tag">Hometown List/</span>
+          <h2 class="work-card__title">The vetted list of who your neighbors recommend</h2>
+          <p class="work-card__desc">
+            Word of mouth is the only referral system a neighborhood actually trusts — and it's broken. Hometown List is that list, put online: real names, real vouches, real license checks. And nobody can ever pay their way above you.
+          </p>
+          <div class="work-card__chips">
+            <span class="tech-chip">Hermes Agent</span>
+            <span class="tech-chip">Modern Web</span>
+            <span class="tech-chip">Solving real community problems</span>
+            <span class="tech-chip">Supabase / Vercel</span>
+          </div>
+          <div class="work-card__meta">
+            <span class="work-card__client">client: Self</span>
+            <a href="https://thehometownlist.com/" class="work-card__cta">View Project →</a>
+          </div>
+        </article>
+
+        <article class="work-card">
+          <span class="work-card__tag">Hourglass/</span>
+          <h2 class="work-card__title">Cron Management UI</h2>
+          <p class="work-card__desc">
+            Hourglass is a lightweight, self-hosted web UI for managing Linux cron jobs. See your scheduled tasks, view execution history, and add/edit/delete jobs without touching the command line.
+          </p>
+          <div class="work-card__chips">
+            <span class="tech-chip">golang</span>
+            <span class="tech-chip">MCP server</span>
+            <span class="tech-chip">Web application</span>
+            <span class="tech-chip">Open Source</span>
+          </div>
+          <div class="work-card__meta">
+            <span class="work-card__client">client: Open Source</span>
+            <a href="https://github.com/TillmanBuildsTech/hourglass" class="work-card__cta">View Project →</a>
+          </div>
+        </article>
+
+        <article class="work-card">
+          <span class="work-card__tag">serv/</span>
+          <h2 class="work-card__title">Cross Platform Service Wrapper</h2>
+          <p class="work-card__desc">
+            serv - cross platform native service wrapper utility and modern replacement for NSSM (non sucking service manager)
+          </p>
+          <div class="work-card__chips">
+            <span class="tech-chip">golang</span>
+            <span class="tech-chip">SCM, systemd, launchd</span>
+            <span class="tech-chip">CLI application</span>
+            <span class="tech-chip">Open Source</span>
+          </div>
+          <div class="work-card__meta">
+            <span class="work-card__client">client: Open Source</span>
+            <a href="https://github.com/TillmanBuildsTech/serv" class="work-card__cta">View Project →</a>
+          </div>
+        </article>
+
+      </div>
+
+      <div class="page-cta">
+        <h2 class="page-cta__headline">Ready to solve your hard problem?</h2>
+        <p class="page-cta__sub">Tell me what's challenging you.</p>
+        <a href="/#contact" class="btn-primary">Start a Project →</a>
+      </div>
+
+    </div>
+  </main>
+
+  <FooterBar />
+
+  <script>
+    import '../scripts/main.js';
+  </script>
+</BaseLayout>
