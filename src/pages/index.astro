@@ -191,6 +191,10 @@ import brandonTillmanImage from '../images/brandon-tillman.png';
               <label class="form-label" for="message">Message</label>
               <textarea class="form-textarea" id="message" name="message" placeholder="What's the hard problem you're trying to solve?" rows="4" required></textarea>
             </div>
+            <div class="hp-field" aria-hidden="true">
+              <label for="website">Website</label>
+              <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+            </div>
             <button type="submit" class="btn-submit">$ send_message</button>
             <div id="form-status" role="alert" aria-live="polite" style="margin-top: 12px; font-family: var(--font-mono); font-size: 13px;"></div>
           </form>
@@ -200,6 +204,10 @@ import brandonTillmanImage from '../images/brandon-tillman.png';
           <h3 class="newsletter__headline">Deep dives, not noise.</h3>
           <p class="newsletter__sub">Occasional writing on hard infrastructure problems, AI at scale, and things I build. Substance only.</p>
           <form id="newsletter-form" class="newsletter__form" method="POST" action="/api/subscribe" aria-label="Newsletter subscribe">
+            <div class="hp-field" aria-hidden="true">
+              <label for="newsletter-website">Website</label>
+              <input type="text" id="newsletter-website" name="website" tabindex="-1" autocomplete="off" />
+            </div>
             <input class="newsletter__input" type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
             <button type="submit" class="btn-subscribe">subscribe →</button>
           </form>

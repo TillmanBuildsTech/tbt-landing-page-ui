@@ -671,6 +671,32 @@ input, textarea, select {
 }
 .footer-bar__links a:hover { color: var(--text); }
 
+.footer-bar__version {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  opacity: 0.75;
+  margin-left: 2px;
+}
+
+/* Honeypot — hidden from humans, present for bots */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.hp-field input {
+  width: 1px;
+  height: 1px;
+  border: 0;
+  padding: 0;
+}
+
 /* ════════════════════════════════════════════════════════════════
    RESPONSIVE
 ════════════════════════════════════════════════════════════════ */

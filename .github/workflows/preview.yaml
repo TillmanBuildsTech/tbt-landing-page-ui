@@ -1,0 +1,133 @@
+name: CI and Dev Preview
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  test:
+    name: Unit tests + build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+  validate-fork-pr:
+    name: Validate fork PR build
+    # Fork PRs don't get secrets — validate tests + build without deploying.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate tests + build
+        run: |
+          npm run test
+          npm run build
+
+  deploy-preview:
+    name: Deploy preview to Vercel
+    # Push to dev already deploys the preview. A PR whose head IS dev (the
+    # dev→main launch PR) would otherwise redeploy the same commit on every
+    # synchronize as a synthetic merge ref, so we skip those. Feature-branch
+    # PRs (head != dev) still get merge-ref previews; fork PRs are validated
+    # only (no secrets) by validate-fork-pr.
+    if: >-
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' &&
+       !github.event.pull_request.head.repo.fork &&
+       github.event.pull_request.head.ref != 'dev')
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel preview environment
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy preview to Vercel
+        id: deploy
+        # Remote build (no --prebuilt): Vercel runs the buildCommand
+        # server-side. REQUIRED for Vercel Web Analytics — prebuilt
+        # (Build Output API) deployments don't serve
+        # /_vercel/insights/script.js (404), so analytics never tracks.
+        # vercel deploy prints the unique per-build URL as the last bare line.
+        run: |
+          DEPLOY_URL=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }} \
+            | grep -oE 'https://[a-z0-9-]+\.vercel\.app' | tail -1)
+          echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
+          echo "Deployed preview: $DEPLOY_URL"
+
+      - name: Point the canonical dev-preview alias at this deployment
+        # vercel deploy creates a unique per-build URL but never moves the
+        # project aliases, so the human-facing preview URL goes stale on every
+        # dev push. Repoint it explicitly — dev pushes only; feature-branch
+        # PR previews keep their own unique URLs.
+        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          vercel alias set "${{ steps.deploy.outputs.url }}" \
+            "tillman-builds-tech-tillman32.vercel.app" \
+            --token="$VERCEL_TOKEN"
+
+      - name: Comment preview URL on PR
+        if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'ready_for_review')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --body "🚀 Preview: ${{ steps.deploy.outputs.url }}"
