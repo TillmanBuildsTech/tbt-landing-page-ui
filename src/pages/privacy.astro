@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import FooterBar from '../components/FooterBar.astro';
+---
+
+<BaseLayout
+  title="Privacy Policy — TillmanBuildsTech"
+  description="How TillmanBuildsTech collects, uses, and protects your information."
+>
+  <Nav />
+
+  <main class="page-content">
+    <div class="container">
+
+      <header class="page-header">
+        <p class="section-label">// Privacy</p>
+        <h1 class="page-header__headline">Privacy Policy</h1>
+        <p class="page-header__sub">Last updated: August 2026</p>
+      </header>
+
+      <div class="legal" style="max-width: 760px; line-height: 1.75; color: var(--text); display: grid; gap: var(--space-5);">
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">What I collect</h2>
+          <p>If you use the contact form, I receive your name, email address, project type, and message. If you subscribe to the newsletter, I receive your email address.</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">How it's used</h2>
+          <p>Contact form submissions are used solely to respond to your inquiry. Newsletter emails are used solely to send the newsletter you signed up for. I don't sell, rent, or share your information with anyone for marketing purposes.</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">Third parties</h2>
+          <p>Contact and newsletter submissions are stored in my customer relationship system, <a href="https://crm.tillmanbuildstech.com" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">Twenty CRM</a>. The site is hosted on <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">Vercel</a>, which provides basic analytics (page views only — no personal data). Each service stores data according to its own privacy policy.</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">Retention &amp; deletion</h2>
+          <p>I keep contact and newsletter data as long as needed to serve you. To have your data removed, reply to any email you receive or use the contact form and ask — I'll delete it promptly.</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">Contact</h2>
+          <p>Questions about this policy? <a href="/#contact" style="color: var(--accent);">Get in touch</a>.</p>
+        </section>
+
+      </div>
+
+      <div class="page-cta" style="margin-top: var(--space-10);">
+        <h2 class="page-cta__headline">Let's solve it together.</h2>
+        <p class="page-cta__sub">Tell me about your hard problem.</p>
+        <a href="/#contact" class="btn-primary">Start a Project →</a>
+      </div>
+
+    </div>
+  </main>
+
+  <FooterBar />
+
+  <script>
+    import '../scripts/main.js';
+  </script>
+</BaseLayout>

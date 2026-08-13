@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import FooterBar from '../components/FooterBar.astro';
+---
+
+<BaseLayout
+  title="404 — Page not found | TillmanBuildsTech"
+  description="The page you're looking for doesn't exist."
+>
+  <Nav />
+
+  <main class="page-content" style="display: flex; align-items: center; min-height: calc(100vh - 160px);">
+    <div class="container">
+      <div class="terminal" style="max-width: 640px; margin: 0 auto; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; background: var(--surface);">
+        <div class="terminal__chrome" style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #1a1815; border-bottom: 1px solid var(--border);">
+          <span class="terminal__dot terminal__dot--red"></span>
+          <span class="terminal__dot terminal__dot--yellow"></span>
+          <span class="terminal__dot terminal__dot--green"></span>
+          <span style="font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-left: 8px; letter-spacing: 0.08em;">brandon@TillmanBuildsTech ~ 404</span>
+        </div>
+        <div style="padding: var(--space-6); font-family: var(--font-mono); font-size: 13px; line-height: 2;">
+          <p><span style="color: var(--accent);">$</span> ls ./requested/page</p>
+          <p style="color: #FF6B6B;">ls: cannot access 'requested/page': No such file or directory</p>
+          <p style="margin-top: var(--space-4);"><span style="color: var(--accent);">$</span> <span style="color: var(--muted);"># try one of these instead</span></p>
+          <p><span style="color: var(--accent);">$</span> <a href="/" style="color: var(--text); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 4px;">cd ~</a> <span style="color: var(--muted);"># home</span></p>
+          <p><span style="color: var(--accent);">$</span> <a href="/#services" style="color: var(--text); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 4px;">cd ~/services</a></p>
+          <p><span style="color: var(--accent);">$</span> <a href="/#contact" style="color: var(--text); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 4px;">cd ~/contact</a> <span style="color: var(--muted);"># start a project</span></p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <FooterBar />
+
+  <script>
+    import '../scripts/main.js';
+  </script>
+</BaseLayout>

@@ -10,6 +10,34 @@ const {
   title = "TillmanBuildsTech — Brandon Tillman, Independent Consultant",
   description = "Brandon Tillman — Independent consultant building AI agents, automation, web apps, and DevOps infrastructure for businesses that want results, not demos.",
 } = Astro.props;
+
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL as string | undefined) ?? 'https://tillmanbuildstech.com';
+const githubUrl = (import.meta.env.PUBLIC_GITHUB_URL as string | undefined) ?? 'https://github.com/TillmanBuildsTech';
+const linkedinUrl = (import.meta.env.PUBLIC_LINKEDIN_URL as string | undefined) ?? 'https://www.linkedin.com/in/tillman-brandon/';
+const blogUrl = (import.meta.env.PUBLIC_BLOG_URL as string | undefined) ?? 'https://brandontillman.com';
+
+const path = Astro.url.pathname;
+const canonical = new URL(path, siteUrl).toString();
+const ogImage = new URL('/og-image.png', siteUrl).toString();
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Brandon Tillman',
+  url: siteUrl,
+  jobTitle: 'Independent Consultant',
+  description: 'Independent consultant specializing in AI agents, automation, web applications, and DevOps infrastructure.',
+  image: ogImage,
+  sameAs: [githubUrl, linkedinUrl, blogUrl],
+};
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'TillmanBuildsTech',
+  url: siteUrl,
+  description: description,
+};
 ---
 
 <!doctype html>
@@ -19,6 +47,33 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
+
+    <!-- Canonical -->
+    <link rel="canonical" href={canonical} />
+
+    <!-- Social / Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="TillmanBuildsTech" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- PWA-ish / theme -->
+    <meta name="theme-color" content="#0C0A09" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json" set:html={JSON.stringify(personSchema)}></script>
+    <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)}></script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,7 +87,8 @@ const {
          in parallel rather than waiting for JS to execute first -->
     <link rel="modulepreload" href="/pretext.js" />
 
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- Vercel Web Analytics (external same-origin script — CSP-safe) -->
+    <script defer src="/_vercel/insights/script.js"></script>
   </head>
   <body>
     <slot />
