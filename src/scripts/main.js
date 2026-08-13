@@ -298,13 +298,39 @@ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 }
 
 // ── 6. CONTACT FORM ─────────────────────────────────────────────
-const contactForm = document.getElementById('contact-form');
-const formStatus  = document.getElementById('form-status');
+const contactForm   = document.getElementById('contact-form');
+const formStatus    = document.getElementById('form-status');
+const messageInput  = document.getElementById('message');
+const messageCount  = document.getElementById('message-count');
 if (contactForm && formStatus) {
+  // Live char counter. Source of truth for the cap is the textarea's
+  // maxlength attribute — keeps UI, JS, and server in lockstep.
+  if (messageInput && messageCount) {
+    const maxLen = messageInput.maxLength || 0;
+    const updateCount = () => {
+      const len = messageInput.value.length;
+      messageCount.textContent = `${len} / ${maxLen}`;
+      messageCount.classList.toggle('is-at-limit', len >= maxLen);
+      messageCount.classList.toggle('is-near-limit', len >= Math.floor(maxLen * 0.9));
+    };
+    messageInput.addEventListener('input', updateCount);
+    contactForm.addEventListener('reset', () => {
+      messageCount.textContent = `0 / ${maxLen}`;
+      messageCount.classList.remove('is-near-limit', 'is-at-limit');
+    });
+    updateCount();
+  }
+
   contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const submitBtn = contactForm.querySelector('[type="submit"]');
     const originalText = submitBtn.textContent;
+    const message = (messageInput?.value ?? '').trim();
+    if (message.length > (messageInput?.maxLength || 0)) {
+      formStatus.style.color = '#FF6B6B';
+      formStatus.textContent = `$ error — message too long (max ${messageInput?.maxLength})`;
+      return;
+    }
     submitBtn.disabled = true;
     submitBtn.textContent = '$ sending...';
     formStatus.textContent = '';

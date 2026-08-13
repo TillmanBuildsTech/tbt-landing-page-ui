@@ -1,6 +1,10 @@
 import type { APIRoute } from 'astro';
 import {
+  MAX_BODY_BYTES,
+  MAX_EMAIL_LENGTH,
+  MAX_NAME_LENGTH,
   getClientIp,
+  isBodyTooLarge,
   isSpamBot,
   isValidEmail,
   jsonResponse,
@@ -14,6 +18,11 @@ export const POST: APIRoute = async ({ request }) => {
   if (!getTwentyKey()) {
     console.error('Missing TWENTY_API_KEY');
     return jsonResponse({ error: 'Server misconfiguration.' }, 500);
+  }
+
+  // Reject oversized bodies before parsing them.
+  if (isBodyTooLarge(request, MAX_BODY_BYTES)) {
+    return jsonResponse({ error: 'Request body too large.' }, 413);
   }
 
   const ip = getClientIp(request);
@@ -33,14 +42,17 @@ export const POST: APIRoute = async ({ request }) => {
     return jsonResponse({ success: true });
   }
 
-  const email = (data.get('email') as string | null)?.trim() ?? '';
+  const email = ((data.get('email') as string | null) ?? '').trim();
   if (!email || !isValidEmail(email)) {
     return jsonResponse({ error: 'A valid email address is required.' }, 400);
+  }
+  if (email.length > MAX_EMAIL_LENGTH) {
+    return jsonResponse({ error: `Email must be ${MAX_EMAIL_LENGTH} characters or fewer.` }, 400);
   }
 
   try {
     await createPerson({
-      firstName: email.split('@')[0] || 'Newsletter',
+      firstName: (email.split('@')[0] || 'Newsletter').slice(0, MAX_NAME_LENGTH),
       email,
       jobTitle: 'TBT newsletter signup',
     });
