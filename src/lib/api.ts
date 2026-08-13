@@ -52,6 +52,37 @@ export function isValidEmail(email: string): boolean {
  */
 export const MAX_MESSAGE_LENGTH = 4000;
 
+/** Human names are short. Caps every input that lands in the CRM. */
+export const MAX_NAME_LENGTH = 100;
+/** RFC 5321 limit for email addresses. */
+export const MAX_EMAIL_LENGTH = 254;
+/**
+ * Cap on the whole request body. The legit form is a few KB (name 100 +
+ * email 254 + message 4000 + select + multipart overhead); 64 KB gives a
+ * huge margin while bounding how much junk a script can push per request.
+ */
+export const MAX_BODY_BYTES = 64 * 1024;
+
+/**
+ * Replace runs of control characters (NUL, newline, ESC, ...) with a single
+ * space — paste artifacts a legit visitor could introduce — then collapse
+ * whitespace and trim. The contact message is the exception: it may
+ * legitimately contain newlines, so it is NOT run through this (it gets
+ * trim() + a length cap only).
+ */
+export function sanitizeText(value: string): string {
+  return value
+    .replace(/[\u0000-\u001F\u007F]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Best-effort early rejection of oversized bodies. Absent content-length → not too large. */
+export function isBodyTooLarge(request: Request, maxBytes: number): boolean {
+  const len = Number(request.headers.get('content-length') ?? '0');
+  return Number.isFinite(len) && len > maxBytes;
+}
+
 export function jsonResponse(payload: unknown, status = 200): Response {
   return new Response(JSON.stringify(payload), {
     status,

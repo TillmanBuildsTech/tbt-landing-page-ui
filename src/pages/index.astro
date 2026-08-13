@@ -5,7 +5,7 @@ import FooterBar from '../components/FooterBar.astro';
 import { Image } from 'astro:assets';
 import brandonTillmanImage from '../images/brandon-tillman.png';
 // import brandonTillmanImage from '../images/brandon-tillman-tbt.png';
-import { MAX_MESSAGE_LENGTH } from '../lib/api';
+import { MAX_EMAIL_LENGTH, MAX_MESSAGE_LENGTH, MAX_NAME_LENGTH } from '../lib/api';
 ---
 
 <BaseLayout>
@@ -170,11 +170,11 @@ import { MAX_MESSAGE_LENGTH } from '../lib/api';
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label" for="name">Name</label>
-                <input class="form-input" type="text" id="name" name="name" placeholder="Jane Smith" autocomplete="name" required />
+                <input class="form-input" type="text" id="name" name="name" placeholder="Jane Smith" autocomplete="name" maxlength={MAX_NAME_LENGTH} required />
               </div>
               <div class="form-group">
                 <label class="form-label" for="email">Email</label>
-                <input class="form-input" type="email" id="email" name="email" placeholder="jane@company.com" autocomplete="email" required />
+                <input class="form-input" type="email" id="email" name="email" placeholder="jane@company.com" autocomplete="email" maxlength={MAX_EMAIL_LENGTH} required />
               </div>
             </div>
             <div class="form-group">
@@ -210,7 +210,7 @@ import { MAX_MESSAGE_LENGTH } from '../lib/api';
               <label for="newsletter-website">Website</label>
               <input type="text" id="newsletter-website" name="website" tabindex="-1" autocomplete="off" />
             </div>
-            <input class="newsletter__input" type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+            <input class="newsletter__input" type="email" name="email" placeholder="you@example.com" autocomplete="email" maxlength={MAX_EMAIL_LENGTH} required />
             <button type="submit" class="btn-subscribe">subscribe →</button>
           </form>
           <div id="newsletter-status" role="alert" aria-live="polite" style="margin-top: 8px; font-family: var(--font-mono); font-size: 12px;"></div>

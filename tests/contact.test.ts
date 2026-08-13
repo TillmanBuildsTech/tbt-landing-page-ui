@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { POST, ALL } from '../src/pages/api/contact';
-import { MAX_MESSAGE_LENGTH } from '../src/lib/api';
+import {
+  MAX_BODY_BYTES,
+  MAX_EMAIL_LENGTH,
+  MAX_MESSAGE_LENGTH,
+  MAX_NAME_LENGTH,
+} from '../src/lib/api';
 
 const TWENTY_KEY = 'test-twenty-key';
 
@@ -98,6 +103,70 @@ describe('POST /api/contact', () => {
     vi.stubGlobal('fetch', fetchMock);
     const res = await post({ name: 'Jane', email: 'jane@x.com', message: 'x'.repeat(MAX_MESSAGE_LENGTH) }, '10.75.0.1');
     expect(res.status).toBe(200);
+  });
+
+  it('rejects a name over the length cap without calling Twenty', async () => {
+    vi.stubEnv('TWENTY_API_KEY', TWENTY_KEY);
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    const res = await post({ name: 'J'.repeat(MAX_NAME_LENGTH + 1), email: 'jane@x.com', message: 'hi' }, '10.74.0.1');
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toMatch(new RegExp(`name must be ${MAX_NAME_LENGTH}`, 'i'));
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects an email over the length cap without calling Twenty', async () => {
+    vi.stubEnv('TWENTY_API_KEY', TWENTY_KEY);
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    const longEmail = `${'a'.repeat(MAX_EMAIL_LENGTH)}@x.com`;
+    expect(longEmail.length).toBeGreaterThan(MAX_EMAIL_LENGTH);
+    const res = await post({ name: 'Jane', email: longEmail, message: 'hi' }, '10.73.0.1');
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toMatch(new RegExp(`email must be ${MAX_EMAIL_LENGTH}`, 'i'));
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects an unknown project type without calling Twenty', async () => {
+    vi.stubEnv('TWENTY_API_KEY', TWENTY_KEY);
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    const res = await post(
+      { name: 'Jane', email: 'jane@x.com', message: 'hi', project_type: 'constructor' },
+      '10.72.0.1'
+    );
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toMatch(/invalid project type/i);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects oversized request bodies with 413 before parsing', async () => {
+    vi.stubEnv('TWENTY_API_KEY', TWENTY_KEY);
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    const req = new Request('http://localhost/api/contact', {
+      method: 'POST',
+      headers: { 'x-forwarded-for': '10.71.0.1' },
+      body: 'x'.repeat(100),
+    });
+    req.headers.set('content-length', String(MAX_BODY_BYTES + 1));
+    const res = await POST({ request: req });
+    expect(res.status).toBe(413);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('strips control characters from the name before storing', async () => {
+    vi.stubEnv('TWENTY_API_KEY', TWENTY_KEY);
+    const fetchMock = vi.fn().mockResolvedValueOnce(okJson({ data: { createPerson: { id: 'person-123' } } }, 201));
+    vi.stubGlobal('fetch', fetchMock);
+    const res = await post({ name: 'Jane\u0000\u000ASmith', email: 'jane@x.com', message: 'hi' }, '10.70.0.1');
+    expect(res.status).toBe(200);
+    const [, init] = fetchMock.mock.calls[0];
+    const body = JSON.parse((init as RequestInit).body as string);
+    expect(body.name).toEqual({ firstName: 'Jane', lastName: 'Smith' });
   });
 
   it('creates a Person with the message in Twenty on success', async () => {
