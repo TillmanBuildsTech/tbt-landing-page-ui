@@ -1,38 +1,44 @@
 import type { APIRoute } from 'astro';
-import { Resend } from 'resend';
+import {
+  contactLimiter,
+  getClientIp,
+  isSpamBot,
+  isValidEmail,
+  jsonResponse,
+} from '../../lib/api';
+import { addNote, createPerson, getTwentyKey } from '../../lib/twenty';
 
 export const prerender = false;
 
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
+const PROJECT_TYPE_LABELS: Record<string, string> = {
+  'ai-agents': 'AI & Agents',
+  automation: 'Automation',
+  'web-apps': 'Web & Apps',
+  devops: 'DevOps & Infrastructure',
+  other: 'Other',
+};
 
 export const POST: APIRoute = async ({ request }) => {
-  const apiKey = import.meta.env.RESEND_API_KEY;
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'Server misconfiguration.' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+  if (!getTwentyKey()) {
+    console.error('Missing TWENTY_API_KEY');
+    return jsonResponse({ error: 'Server misconfiguration.' }, 500);
+  }
+
+  const ip = getClientIp(request);
+  if (!contactLimiter(ip)) {
+    return jsonResponse({ error: 'Too many requests. Please try again later.' }, 429);
   }
 
   let data: FormData;
   try {
     data = await request.formData();
   } catch {
-    return new Response(JSON.stringify({ error: 'Invalid request body.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonResponse({ error: 'Invalid request body.' }, 400);
+  }
+
+  // Honeypot — fake success so bots don't learn the trap.
+  if (isSpamBot(data)) {
+    return jsonResponse({ success: true });
   }
 
   const name = (data.get('name') as string | null)?.trim() ?? '';
@@ -41,67 +47,34 @@ export const POST: APIRoute = async ({ request }) => {
   const projectType = (data.get('project_type') as string | null)?.trim() ?? '';
 
   if (!name) {
-    return new Response(JSON.stringify({ error: 'Name is required.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonResponse({ error: 'Name is required.' }, 400);
   }
   if (!email || !isValidEmail(email)) {
-    return new Response(JSON.stringify({ error: 'A valid email address is required.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonResponse({ error: 'A valid email address is required.' }, 400);
   }
   if (!message) {
-    return new Response(JSON.stringify({ error: 'Message is required.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonResponse({ error: 'Message is required.' }, 400);
   }
 
-  const safeName = escapeHtml(name);
-  const safeEmail = escapeHtml(email);
-  const safeMessage = escapeHtml(message).replace(/\n/g, '<br>');
-  const safeProjectType = escapeHtml(projectType);
+  const [firstName, ...lastNameParts] = name.split(/\s+/);
+  const label = PROJECT_TYPE_LABELS[projectType] ?? projectType;
+  const jobTitle = `TBT contact form${label ? ` — ${label}` : ''}`;
 
-  const toEmail = import.meta.env.CONTACT_TO_EMAIL ?? 'btillman32@gmail.com';
-
-  const resend = new Resend(apiKey);
-  const { error } = await resend.emails.send({
-    from: 'TillmanBuildsTech Contact <noreply@tillmanbuildstech.com>',
-    to: toEmail,
-    subject: `New project inquiry from ${safeName}`,
-    html: `
-      <div style="font-family: sans-serif; max-width: 600px; color: #333;">
-        <h2 style="color: #2ECBA8;">New project inquiry</h2>
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr><td style="padding: 8px 0; font-weight: bold; width: 120px;">Name</td><td>${safeName}</td></tr>
-          <tr><td style="padding: 8px 0; font-weight: bold;">Email</td><td>${safeEmail}</td></tr>
-          ${safeProjectType ? `<tr><td style="padding: 8px 0; font-weight: bold;">Project type</td><td>${safeProjectType}</td></tr>` : ''}
-        </table>
-        <hr style="margin: 16px 0; border: none; border-top: 1px solid #eee;" />
-        <h3 style="margin-bottom: 8px;">Message</h3>
-        <p style="color: #555; line-height: 1.6;">${safeMessage}</p>
-      </div>
-    `,
-  });
-
-  if (error) {
-    console.error('Resend error:', error);
-    return new Response(JSON.stringify({ error: 'Failed to send message. Please try again.' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
+  try {
+    const person = await createPerson({
+      firstName,
+      lastName: lastNameParts.join(' '),
+      email,
+      jobTitle,
     });
+    // Best-effort: a note failure must never fail the request.
+    await addNote(`TBT contact — ${name} (${email})`, message);
+  } catch (err) {
+    console.error('Twenty contact error:', err);
+    return jsonResponse({ error: 'Failed to send message. Please try again.' }, 500);
   }
 
-  return new Response(JSON.stringify({ success: true }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return jsonResponse({ success: true });
 };
 
-export const ALL: APIRoute = () =>
-  new Response(JSON.stringify({ error: 'Method not allowed.' }), {
-    status: 405,
-    headers: { 'Content-Type': 'application/json' },
-  });
+export const ALL: APIRoute = () => jsonResponse({ error: 'Method not allowed.' }, 405);
