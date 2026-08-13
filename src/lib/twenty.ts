@@ -24,6 +24,7 @@ export interface PersonLead {
   lastName?: string;
   email: string;
   jobTitle?: string;
+  contactMessage?: string;
 }
 
 /** Create a Person. Returns the Twenty record id. Throws on failure. */
@@ -39,6 +40,7 @@ export async function createPerson(lead: PersonLead): Promise<{ id: string }> {
     emails: { primaryEmail: lead.email },
   };
   if (lead.jobTitle) body.jobTitle = lead.jobTitle;
+  if (lead.contactMessage) body.contactMessage = lead.contactMessage;
 
   const res = await fetch(`${TWENTY_BASE}/rest/people`, {
     method: 'POST',
@@ -58,34 +60,4 @@ export async function createPerson(lead: PersonLead): Promise<{ id: string }> {
   const id = data?.data?.createPerson?.id;
   if (!id) throw new Error('Twenty createPerson returned no id.');
   return { id };
-}
-
-/**
- * Create a Note with the contact message. Best-effort — never throws.
- *
- * Verified 2026-08-13 against crm.tillmanbuildstech.com (Twenty v1.15):
- * Notes accept `title` + `bodyV2.markdown`, but the REST API exposes NO way
- * to link a note to a Person (`personId`/`person`/`people`/`peopleIds` are all
- * rejected, and GraphQL has no createNote mutation). The title therefore
- * embeds the sender's name + email so the note is findable, and a failed note
- * never fails the lead itself.
- */
-export async function addNote(title: string, bodyText: string): Promise<void> {
-  const apiKey = getTwentyKey();
-  if (!apiKey) return;
-  try {
-    const res = await fetch(`${TWENTY_BASE}/rest/notes`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({ title, bodyV2: { markdown: bodyText } }),
-    });
-    if (!res.ok) {
-      console.error('Twenty addNote failed:', res.status, await res.text());
-    }
-  } catch (err) {
-    console.error('Twenty addNote error:', err);
-  }
 }

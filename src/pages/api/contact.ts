@@ -6,7 +6,7 @@ import {
   isValidEmail,
   jsonResponse,
 } from '../../lib/api';
-import { addNote, createPerson, getTwentyKey } from '../../lib/twenty';
+import { createPerson, getTwentyKey } from '../../lib/twenty';
 
 export const prerender = false;
 
@@ -61,14 +61,13 @@ export const POST: APIRoute = async ({ request }) => {
   const jobTitle = `TBT contact form${label ? ` — ${label}` : ''}`;
 
   try {
-    const person = await createPerson({
+    await createPerson({
       firstName,
       lastName: lastNameParts.join(' '),
       email,
       jobTitle,
+      contactMessage: message,
     });
-    // Best-effort: a note failure must never fail the request.
-    await addNote(`TBT contact — ${name} (${email})`, message);
   } catch (err) {
     console.error('Twenty contact error:', err);
     return jsonResponse({ error: 'Failed to send message. Please try again.' }, 500);

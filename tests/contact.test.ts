@@ -80,12 +80,9 @@ describe('POST /api/contact', () => {
     expect(body.error).toMatch(errorPattern);
   });
 
-  it('creates a Person (and note) in Twenty on success', async () => {
+  it('creates a Person with the message in Twenty on success', async () => {
     vi.stubEnv('TWENTY_API_KEY', TWENTY_KEY);
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(okJson({ data: { createPerson: { id: 'person-123' } } }, 201))
-      .mockResolvedValueOnce(okJson({ data: { createNote: { id: 'note-123' } } }, 201));
+    const fetchMock = vi.fn().mockResolvedValueOnce(okJson({ data: { createPerson: { id: 'person-123' } } }, 201));
     vi.stubGlobal('fetch', fetchMock);
 
     const res = await post(
@@ -96,8 +93,8 @@ describe('POST /api/contact', () => {
     expect(res.status).toBe(200);
     expect((await res.json()).success).toBe(true);
 
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    const [personCall, noteCall] = fetchMock.mock.calls;
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [personCall] = fetchMock.mock.calls;
 
     expect(personCall[0]).toBe('https://crm.tillmanbuildstech.com/rest/people');
     const personInit = personCall[1] as RequestInit;
@@ -108,12 +105,8 @@ describe('POST /api/contact', () => {
       name: { firstName: 'Jane', lastName: 'Smith' },
       emails: { primaryEmail: 'jane@company.com' },
       jobTitle: 'TBT contact form — AI & Agents',
+      contactMessage: 'Need help with AI agents',
     });
-
-    expect(noteCall[0]).toBe('https://crm.tillmanbuildstech.com/rest/notes');
-    const noteBody = JSON.parse((noteCall[1] as RequestInit).body as string);
-    expect(noteBody.title).toContain('jane@company.com');
-    expect(noteBody.bodyV2.markdown).toBe('Need help with AI agents');
   });
 
   it('returns 500 when Twenty rejects the Person', async () => {
@@ -130,18 +123,5 @@ describe('POST /api/contact', () => {
     }));
     const res = await post({ name: 'Jane', email: 'jane@x.com', message: 'hi' }, '10.44.0.1');
     expect(res.status).toBe(500);
-  });
-
-  it('succeeds even when the note call fails (best-effort)', async () => {
-    vi.stubEnv('TWENTY_API_KEY', TWENTY_KEY);
-    vi.stubGlobal(
-      'fetch',
-      vi
-        .fn()
-        .mockResolvedValueOnce(okJson({ data: { createPerson: { id: 'person-123' } } }, 201))
-        .mockRejectedValueOnce(new Error('note failed'))
-    );
-    const res = await post({ name: 'Jane', email: 'jane@x.com', message: 'hi' }, '10.33.0.1');
-    expect(res.status).toBe(200);
   });
 });
