@@ -368,3 +368,11 @@ if (newsletterForm && newsletterStatus) {
     }
   });
 }
+
+// ── 8. BACK TO TOP ─────────────────────────────────────────────
+document.querySelectorAll('[data-back-to-top]').forEach((el) => {
+  el.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});

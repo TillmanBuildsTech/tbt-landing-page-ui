@@ -1,0 +1,28 @@
+name: Version Bump Guard
+
+# Every change that ships (a PR merged into main, or a direct push) must bump
+# package.json's version. This workflow fails loudly on PRs to main when it
+# isn't. The footer displays the version (vX.Y.Z), so a stale version on a
+# merged PR would mislabel the public site.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-version:
+    name: Version bumped vs main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Fail if version not bumped
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: node scripts/check-version-bump.cjs

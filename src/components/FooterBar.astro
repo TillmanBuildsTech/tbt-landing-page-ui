@@ -1,9 +1,17 @@
+---
+import pkg from '../../package.json';
+
+const version = pkg.version;
+const isPreview = process.env.VERCEL_ENV === 'preview';
+---
+
 <footer class="footer-bar" role="contentinfo">
   <div class="container">
     <div class="footer-bar__inner">
-      <p class="footer-bar__copy">© 2026 Brandon Tillman — TillmanBuildsTech.com</p>
+      <p class="footer-bar__copy">© 2026 Brandon Tillman — TillmanBuildsTech.com <span class="footer-bar__version" title="Site version">v{version}{isPreview ? ' · preview' : ''}</span></p>
       <nav class="footer-bar__links" aria-label="Footer links">
-        <a href="#" onclick="window.scrollTo({ top: 0, behavior: 'smooth' }); return false;">Back to top</a>
+        <a href="/privacy">Privacy</a>
+        <a href="#" data-back-to-top>Back to top</a>
       </nav>
     </div>
   </div>
