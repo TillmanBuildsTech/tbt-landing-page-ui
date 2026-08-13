@@ -555,6 +555,16 @@ input, textarea, select {
 }
 .form-textarea::placeholder { color: var(--muted); opacity: 0.6; }
 .form-textarea:focus { border-color: var(--accent); outline: none; }
+.form-hint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-top: 6px;
+  transition: color 0.15s;
+}
+.form-hint.is-near-limit { color: #E0A33B; }
+.form-hint.is-at-limit  { color: #FF6B6B; }
 .btn-submit {
   font-family: var(--font-mono);
   font-size: 13px;

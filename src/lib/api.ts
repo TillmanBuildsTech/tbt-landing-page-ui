@@ -44,6 +44,14 @@ export function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+/**
+ * Max length for the contact form message. Enforced in three places:
+ * the textarea `maxlength` (index.astro), the client-side counter/guard
+ * (main.js reads it off the textarea), and the server (contact.ts).
+ * Generous for real inquiries; keeps payloads far below infra limits.
+ */
+export const MAX_MESSAGE_LENGTH = 4000;
+
 export function jsonResponse(payload: unknown, status = 200): Response {
   return new Response(JSON.stringify(payload), {
     status,

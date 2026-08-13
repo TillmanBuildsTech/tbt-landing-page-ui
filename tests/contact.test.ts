@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { POST, ALL } from '../src/pages/api/contact';
+import { MAX_MESSAGE_LENGTH } from '../src/lib/api';
 
 const TWENTY_KEY = 'test-twenty-key';
 
@@ -78,6 +79,25 @@ describe('POST /api/contact', () => {
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toMatch(errorPattern);
+  });
+
+  it('rejects a message over the length cap without calling Twenty', async () => {
+    vi.stubEnv('TWENTY_API_KEY', TWENTY_KEY);
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    const res = await post({ name: 'Jane', email: 'jane@x.com', message: 'x'.repeat(MAX_MESSAGE_LENGTH + 1) }, '10.76.0.1');
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toMatch(new RegExp(`message must be ${MAX_MESSAGE_LENGTH}`, 'i'));
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('accepts a message at exactly the length cap', async () => {
+    vi.stubEnv('TWENTY_API_KEY', TWENTY_KEY);
+    const fetchMock = vi.fn().mockResolvedValueOnce(okJson({ data: { createPerson: { id: 'person-123' } } }, 201));
+    vi.stubGlobal('fetch', fetchMock);
+    const res = await post({ name: 'Jane', email: 'jane@x.com', message: 'x'.repeat(MAX_MESSAGE_LENGTH) }, '10.75.0.1');
+    expect(res.status).toBe(200);
   });
 
   it('creates a Person with the message in Twenty on success', async () => {

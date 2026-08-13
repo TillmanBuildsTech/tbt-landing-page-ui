@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import {
+  MAX_MESSAGE_LENGTH,
   contactLimiter,
   getClientIp,
   isSpamBot,
@@ -54,6 +55,9 @@ export const POST: APIRoute = async ({ request }) => {
   }
   if (!message) {
     return jsonResponse({ error: 'Message is required.' }, 400);
+  }
+  if (message.length > MAX_MESSAGE_LENGTH) {
+    return jsonResponse({ error: `Message must be ${MAX_MESSAGE_LENGTH} characters or fewer.` }, 400);
   }
 
   const [firstName, ...lastNameParts] = name.split(/\s+/);
