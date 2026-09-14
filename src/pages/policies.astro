@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import FooterBar from '../components/FooterBar.astro';
+
+// Brand-wide legal page: covers TillmanBuildsTech and every sub-application it operates.
+// Written to satisfy common platform verification requirements (Twilio AUP, Stripe, etc.)
+// while staying generic enough to apply across all current and future apps.
+---
+
+<BaseLayout
+  title="Privacy Policy — TillmanBuildsTech"
+  description="How TillmanBuildsTech (Tillman Solutions, LLC) collects, uses, and protects information across all of its applications and services."
+>
+  <Nav />
+
+  <main class="page-content">
+    <div class="container">
+
+      <header class="page-header">
+        <p class="section-label">// Policies</p>
+        <h1 class="page-header__headline">Privacy Policy</h1>
+        <p class="page-header__sub">TillmanBuildsTech · Last updated: August 2026</p>
+      </header>
+
+      <div class="legal" style="max-width: 760px; line-height: 1.75; color: var(--text); display: grid; gap: var(--space-5);">
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">Who this policy covers</h2>
+          <p>This policy applies to TillmanBuildsTech, operated by Tillman Solutions, LLC, and to every website and application it operates — including its landing site (tillmanbuildstech.com) and each sub-application branded under TillmanBuildsTech. Where a specific application publishes its own privacy notice, that notice supplements this policy for that application.</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">What we collect</h2>
+          <p>What we collect depends on how you interact with us:</p>
+          <p>— <strong>Contact &amp; inquiries.</strong> If you submit a contact form, we receive your name, email address, and message (plus any optional details you choose to share).</p>
+          <p>— <strong>Newsletter.</strong> If you subscribe, we receive your email address.</p>
+          <p>— <strong>Application accounts &amp; usage.</strong> Some sub-applications may ask for an account name, email address, or content you create while using them. Each application only asks for what it needs.</p>
+          <p>— <strong>Payments.</strong> Payments, where offered, are processed by third-party payment processors. We never receive or store your full card number.</p>
+          <p>— <strong>Basic telemetry.</strong> Our sites use privacy-respecting, cookieless analytics (page views only — no cross-site tracking, no ad networks).</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">How we use information</h2>
+          <p>We use the information we collect solely to respond to your inquiries, provide and operate the service you signed up for, send communications you requested, maintain security, and comply with law. We do not sell or rent your personal information, and we do not share it for third-party marketing.</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">Communications &amp; SMS consent</h2>
+          <p>If you opt in to text messages (SMS) or email updates through one of our applications, we use your contact information only to send the messages you requested. Message frequency varies by program. Message and data rates may apply. You can stop at any time:</p>
+          <p>— Reply <strong>STOP</strong> to any text message to unsubscribe from texts.<br/>
+             — Reply <strong>HELP</strong> for assistance, or use the contact information below.<br/>
+             — Use the unsubscribe link in any email, or reply asking to be removed.</p>
+          <p>Consent to receive messages is not a condition of purchase. We do not share mobile numbers with third parties for their own marketing.</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">Third-party services</h2>
+          <p>We rely on a small set of trusted providers to run things: submissions are stored in our customer relationship system (<a href="https://crm.tillmanbuildstech.com" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">Twenty</a>, self-hosted); sites are hosted on <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">Vercel</a>; payments are handled by established payment processors; and messages are delivered through established email/SMS carriers. Each provider processes data only as needed to deliver its service, under its own privacy policy. We never sell your information to them or anyone else.</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">Data retention &amp; deletion</h2>
+          <p>We keep personal information only as long as needed to provide the service, honor your requests, meet legal obligations, and resolve disputes. When you ask us to delete your data — or when an account becomes inactive — we remove or de-identify it within 30 days unless law requires us to keep it longer.</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">Your choices &amp; rights</h2>
+          <p>You can ask us to access, correct, export, or delete the personal information we hold about you, and you can withdraw consent to communications at any time. To exercise any of these, reach us using the contact information below — we respond promptly, typically within a few business days.</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">Children's privacy</h2>
+          <p>Our websites and applications are not directed to children under 13, and we do not knowingly collect personal information from them. If you believe a child has provided us personal information, contact us and we will delete it.</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">Security</h2>
+          <p>We protect your data in transit with HTTPS encryption, restrict access on a need-to-know basis, and work with providers that maintain industry-standard security practices. No method of transmission or storage is perfectly secure, but we take safeguarding your data seriously and act quickly on any issue.</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">Changes to this policy</h2>
+          <p>If we change this policy materially, we'll update the date above and, where practical, notify you through the affected application before the change takes effect.</p>
+        </section>
+
+        <section>
+          <h2 class="legal__h" style="font-family: var(--font-display); font-size: 22px; margin-bottom: var(--space-2);">Contact</h2>
+          <p>TillmanBuildsTech is operated by Tillman Solutions, LLC (Arizona, USA). Questions, requests, or concerns about this policy? Email <a href="mailto:contact@tillmanbuildstech.com" style="color: var(--accent);">contact@tillmanbuildstech.com</a> — we'll get back to you promptly.</p>
+        </section>
+
+      </div>
+
+      <div class="page-cta" style="margin-top: var(--space-10);">
+        <h2 class="page-cta__headline">Let's solve it together.</h2>
+        <p class="page-cta__sub">Tell me about your hard problem.</p>
+        <a href="/#contact" class="btn-primary">Start a Project →</a>
+      </div>
+
+    </div>
+  </main>
+
+  <FooterBar />
+
+  <script>
+    import '../scripts/main.js';
+  </script>
+</BaseLayout>
