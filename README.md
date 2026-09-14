@@ -9,7 +9,7 @@ Built with **Astro 7**, deployed on **Vercel** (`@astrojs/vercel`). Static pages
 - [Astro](https://astro.build) 7 — static-first, islands-free (progressive enhancement via one shared script)
 - [@astrojs/vercel](https://docs.astro.build/en/guides/integrations-guide/vercel/) ^11 (must stay on ^11 — peers astro ^7)
 - [@astrojs/sitemap](https://docs.astro.build/en/guides/integrations-guide/sitemap/) — auto-generated sitemap
-- [Twenty CRM](https://crm.tillmanbuildstech.com) — contact form + newsletter write leads straight into the CRM (REST, Bearer key)
+- [Odoo CRM](https://odoo.tillmanbuildstech.com) — contact form + newsletter create leads straight into the CRM (JSON-RPC, API key)
 - [@vercel/analytics](https://vercel.com/docs/analytics) — page-view analytics
 - Google Fonts: Fraunces / Plus Jakarta Sans / JetBrains Mono
 
@@ -34,15 +34,20 @@ Copy `.env.example` to `.env` for local dev; set the same values in Vercel (Sett
 | `PUBLIC_GITHUB_URL` | no | GitHub link (default: `https://github.com/TillmanBuildsTech`) |
 | `PUBLIC_LINKEDIN_URL` | no | LinkedIn link (default: `https://www.linkedin.com/in/tillman-brandon/`) |
 | `PUBLIC_BLOG_URL` | no | Blog link (default: `https://brandontillman.com`) |
-| `TWENTY_API_KEY` | **yes** | Contact form + newsletter delivery (CRM Settings → API & Webhooks) |
-| `TWENTY_API_BASE` | no (defaults to TBT instance) | Twenty REST base URL |
+| `ODOO_API_KEY` | **yes** | Contact form + newsletter delivery (Odoo Preferences → API Keys) |
+| `ODOO_URL` | no (defaults to TBT instance) | Odoo base URL |
+| `ODOO_DB` | no (defaults to `tbt-odoo-test`) | Odoo database |
+| `ODOO_USER` | no (defaults to brandon@tillmanbuildstech.com) | Odoo login owning the key |
+| `ODOO_INSECURE_TLS` | no (defaults to `true`) | Odoo serves a self-signed Traefik default cert — set `false` once its ACME cert is fixed |
+| `RESEND_API_KEY` | no | Founder notification email on contact inquiries (skipped when unset) |
+| `CONTACT_TO_EMAIL` | no (defaults to `contact@tillmanbuildstech.com`) | Recipient of the contact notification email |
 
 > `PUBLIC_`-prefixed vars are inlined into the static build — anything secret must use a non-`PUBLIC_` name.
 
 ## API routes
 
-- `POST /api/contact` — validates, rate-limits (5 req / 10 min / IP), honeypot-checks, then creates a **Person** in Twenty (`jobTitle` tags provenance: "TBT contact form — {project type}") and a best-effort Note with the message.
-- `POST /api/subscribe` — same defenses, then creates a Person tagged "TBT newsletter signup".
+- `POST /api/contact` — validates, rate-limits (5 req / 10 min / IP), honeypot-checks, then creates a **Lead** in Odoo (provenance in the title/description: "TBT contact — {name} / {project type}") and sends a best-effort founder notification email (lead is saved first, so a mail failure still returns success rather than risking a retry duplicate).
+- `POST /api/subscribe` — same defenses, then creates a Lead titled "TBT newsletter — {email}".
 
 Both endpoints include a hidden honeypot field (`website`) and a per-IP in-memory rate limiter (`src/lib/api.ts`). The limiter is per serverless instance — fine for launch; swap in Vercel KV/Upstash if spam becomes a problem.
 
@@ -78,9 +83,9 @@ src/
   components/       Nav, FooterBar
   scripts/main.js   all interactions (8 modules incl. back-to-top)
   lib/api.ts        rate limiter, honeypot, validation
-  lib/twenty.ts     Twenty CRM REST client (lead intake)
+  lib/odoo.ts       Odoo CRM JSON-RPC client (lead intake)
   styles/global.css design tokens (see DESIGN.md)
-tests/              vitest suite (API routes + lib, mocked Twenty)
+tests/              vitest suite (API routes + lib, mocked Odoo)
 ```
 
 Design system details live in [`DESIGN.md`](./DESIGN.md).
