@@ -10,13 +10,13 @@ import {
   jsonResponse,
   subscribeLimiter,
 } from '../../lib/api';
-import { createPerson, getTwentyKey } from '../../lib/twenty';
+import { createLead, getOdooKey } from '../../lib/odoo';
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
-  if (!getTwentyKey()) {
-    console.error('Missing TWENTY_API_KEY');
+  if (!getOdooKey()) {
+    console.error('Missing ODOO_API_KEY');
     return jsonResponse({ error: 'Server misconfiguration.' }, 500);
   }
 
@@ -51,13 +51,14 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
-    await createPerson({
-      firstName: (email.split('@')[0] || 'Newsletter').slice(0, MAX_NAME_LENGTH),
-      email,
-      jobTitle: 'TBT newsletter signup',
+    await createLead({
+      name: `TBT newsletter — ${email}`,
+      contact_name: (email.split('@')[0] || 'Newsletter').slice(0, MAX_NAME_LENGTH),
+      email_from: email,
+      description: 'Newsletter subscription via tillmanbuildstech.com',
     });
   } catch (err) {
-    console.error('Twenty subscribe error:', err);
+    console.error('Odoo subscribe error:', err);
     return jsonResponse({ error: 'Failed to subscribe. Please try again.' }, 500);
   }
 
