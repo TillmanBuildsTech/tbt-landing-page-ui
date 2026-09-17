@@ -87,6 +87,10 @@ const websiteSchema = {
          in parallel rather than waiting for JS to execute first -->
     <link rel="modulepreload" href="/pretext.js" />
 
+    <!-- Google Analytics 4 (GA4) — external scripts, CSP-safe -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9QFDKZM93L"></script>
+    <script defer src="/gtag.js"></script>
+
     <!-- Vercel Web Analytics (external same-origin script — CSP-safe) -->
     <script defer src="/_vercel/insights/script.js"></script>
   </head>

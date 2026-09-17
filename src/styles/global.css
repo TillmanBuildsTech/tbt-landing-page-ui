@@ -307,6 +307,10 @@ input, textarea, select {
   padding: var(--space-10) 0 var(--space-12);
   border-top: 1px solid var(--border);
 }
+.faq {
+  padding: var(--space-10) 0 var(--space-12);
+  border-top: 1px solid var(--border);
+}
 .section-label {
   font-family: var(--font-mono);
   font-size: 11px;

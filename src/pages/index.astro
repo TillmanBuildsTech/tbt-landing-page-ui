@@ -6,6 +6,61 @@ import { Image } from 'astro:assets';
 import brandonTillmanImage from '../images/brandon-tillman.png';
 // import brandonTillmanImage from '../images/brandon-tillman-tbt.png';
 import { MAX_EMAIL_LENGTH, MAX_MESSAGE_LENGTH, MAX_NAME_LENGTH } from '../lib/api';
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What kind of projects do you take on?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'I take on projects that need real engineering depth: custom AI agents and LLM integrations, end-to-end workflow automation, fast purpose-built web apps, and production DevOps infrastructure. Most engagements run 2\u20136 weeks on a fixed price, scoped after a short discovery call.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How is hiring an independent consultant different from an agency or a full-time hire?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'You work directly with me — no account managers, no juniors doing the actual work, no agency markup. You get senior, enterprise-depth expertise only for as long as you need it, without the cost and overhead of a full-time hire.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do you work with small businesses or only enterprise companies?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Both. I\'ve spent 15+ years building systems at enterprise scale, but I scale the engagement to the problem. Founders, operators, and small teams hire me for the same deep expertise without agency overhead.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do you handle infrastructure, deployment, and monitoring too?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. I don\'t just write code — I containerize it, build the CI/CD pipeline, deploy to the cloud, and wire up monitoring so the system stays reliable in production. From zero to production-ready.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How fast can you start on a project?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Reach out through the contact form and I\'ll get back within 48 hours. After a discovery call I send a clear scope, timeline, and fixed price — most projects start within a week or two.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What happens after the project launches?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'You get handoff documentation, not a black box. And I stay available for support as your system grows — most clients keep me around for follow-on work.',
+      },
+    },
+  ],
+};
 ---
 
 <BaseLayout>
@@ -155,6 +210,45 @@ import { MAX_EMAIL_LENGTH, MAX_MESSAGE_LENGTH, MAX_NAME_LENGTH } from '../lib/ap
       </div>
     </div>
   </section>
+
+  <!-- ──────────────────────────────────────────────────────────────
+       FAQ
+  ────────────────────────────────────────────────────────────────── -->
+  <section class="faq" id="faq" aria-labelledby="faq-heading">
+    <div class="container">
+      <p class="section-label" id="faq-heading">// FAQ</p>
+      <div class="use-cases-grid">
+
+        <div class="use-case-card">
+          <p class="use-case-card__title">What kind of projects do you take on?</p>
+          <p>Projects that need real engineering depth: custom AI agents and LLM integrations, end-to-end workflow automation, fast purpose-built web apps, and production DevOps. Most engagements run 2–6 weeks on a fixed price, scoped after a short discovery call.</p>
+        </div>
+        <div class="use-case-card">
+          <p class="use-case-card__title">How is hiring an independent consultant different from an agency or a full-time hire?</p>
+          <p>You work directly with me — no account managers, no juniors doing the actual work, no agency markup. You get senior, enterprise-depth expertise for only as long as you need it, without the cost and overhead of a full-time hire.</p>
+        </div>
+        <div class="use-case-card">
+          <p class="use-case-card__title">Do you work with small businesses or only enterprise companies?</p>
+          <p>Both. I've spent 15+ years building systems at enterprise scale, but I scale the engagement to the problem. Founders, operators, and small teams hire me for the same deep expertise without agency overhead.</p>
+        </div>
+        <div class="use-case-card">
+          <p class="use-case-card__title">Do you handle infrastructure, deployment, and monitoring too?</p>
+          <p>Yes. I don't just write code — I containerize it, build the CI/CD pipeline, deploy to the cloud, and wire up monitoring so the system stays reliable in production. From zero to production-ready.</p>
+        </div>
+        <div class="use-case-card">
+          <p class="use-case-card__title">How fast can you start on a project?</p>
+          <p>Reach out through the contact form and I'll get back within 48 hours. After a discovery call I send a clear scope, timeline, and fixed price — most projects start within a week or two.</p>
+        </div>
+        <div class="use-case-card">
+          <p class="use-case-card__title">What happens after the project launches?</p>
+          <p>You get handoff documentation, not a black box. And I stay available for support as your system grows — most clients keep me around for follow-on work.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)}></script>
 
   <!-- ──────────────────────────────────────────────────────────────
        CONTACT + FOOTER CTA
