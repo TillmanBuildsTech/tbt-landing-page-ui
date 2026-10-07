@@ -14,8 +14,6 @@
  *   ODOO_USER    — optional override (defaults to brandon@tillmanbuildstech.com)
  */
 
-import { Agent } from 'undici';
-
 const ODOO_URL =
   (import.meta.env.ODOO_URL as string | undefined) ?? 'https://odoo.tillmanbuildstech.com';
 const ODOO_DB = (import.meta.env.ODOO_DB as string | undefined) ?? 'tbt-odoo-test';
@@ -25,17 +23,6 @@ const ODOO_USER =
 export function getOdooKey(): string | undefined {
   return import.meta.env.ODOO_API_KEY as string | undefined;
 }
-
-// TLS — TEMPORARY: Odoo currently serves Traefik's self-signed DEFAULT cert
-// (no ACME cert has been issued for the host yet), so Node's fetch rejects
-// the chain. Bypass verification for Odoo calls ONLY via a scoped undici
-// dispatcher — nothing else in the function is affected. Set
-// ODOO_INSECURE_TLS=false once the Traefik cert is fixed (infra backlog).
-const INSECURE_TLS =
-  ((import.meta.env.ODOO_INSECURE_TLS as string | undefined) ?? 'true') === 'true';
-const odooDispatcher = INSECURE_TLS
-  ? new Agent({ connect: { rejectUnauthorized: false } })
-  : undefined;
 
 /** Single JSON-RPC call. Throws on transport or Odoo-level errors. */
 async function jsonRpc(service: string, method: string, args: unknown[]): Promise<unknown> {
@@ -48,8 +35,11 @@ async function jsonRpc(service: string, method: string, args: unknown[]): Promis
       params: { service, method, args },
       id: 1,
     }),
-    ...(odooDispatcher ? { dispatcher: odooDispatcher } : {}),
   };
+  // Odoo serves a valid Let's Encrypt cert, so the platform's default fetch
+  // (with TLS verification) is used — no custom dispatcher. Passing an Agent
+  // from the separately-installed undici to the global fetch threw
+  // UND_ERR_INVALID_ARG, which failed every lead and broke the forms.
   const res = await fetch(`${ODOO_URL}/jsonrpc`, init as RequestInit);
 
   if (!res.ok) {

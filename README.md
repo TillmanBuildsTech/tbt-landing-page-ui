@@ -38,7 +38,6 @@ Copy `.env.example` to `.env` for local dev; set the same values in Vercel (Sett
 | `ODOO_URL` | no (defaults to TBT instance) | Odoo base URL |
 | `ODOO_DB` | no (defaults to `tbt-odoo-test`) | Odoo database |
 | `ODOO_USER` | no (defaults to brandon@tillmanbuildstech.com) | Odoo login owning the key |
-| `ODOO_INSECURE_TLS` | no (defaults to `true`) | Odoo serves a self-signed Traefik default cert — set `false` once its ACME cert is fixed |
 | `RESEND_API_KEY` | no | Founder notification email on contact inquiries (skipped when unset) |
 | `CONTACT_TO_EMAIL` | no (defaults to `contact@tillmanbuildstech.com`) | Recipient of the contact notification email |
 
